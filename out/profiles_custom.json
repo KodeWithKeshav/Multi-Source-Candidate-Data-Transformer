@@ -1,0 +1,282 @@
+[
+  {
+    "contact_emails": [
+      "alice.johnson@example.com"
+    ],
+    "current_role": [
+      {
+        "company": "Stripe",
+        "end": null,
+        "start": null,
+        "summary": null,
+        "title": "Senior Software Engineer"
+      }
+    ],
+    "id": "cand_1079ed8c61d3",
+    "name": "Alice Johnson",
+    "top_skills": [
+      {
+        "confidence": 0.9405,
+        "name": "Python",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Go",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Kubernetes",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "AWS",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Backend",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Docker",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      }
+    ]
+  },
+  {
+    "contact_emails": [
+      "diana.chen@example.com"
+    ],
+    "current_role": [
+      {
+        "company": "Microsoft",
+        "end": null,
+        "start": null,
+        "summary": null,
+        "title": "Principal Software Engineer"
+      }
+    ],
+    "id": "cand_3b15fc4297e2",
+    "name": "Diana Chen",
+    "top_skills": [
+      {
+        "confidence": 0.855,
+        "name": "C#",
+        "sources": [
+          "ats"
+        ]
+      },
+      {
+        "confidence": 0.855,
+        "name": "Azure",
+        "sources": [
+          "ats"
+        ]
+      },
+      {
+        "confidence": 0.855,
+        "name": "TypeScript",
+        "sources": [
+          "ats"
+        ]
+      },
+      {
+        "confidence": 0.855,
+        "name": "React",
+        "sources": [
+          "ats"
+        ]
+      }
+    ]
+  },
+  {
+    "contact_emails": [
+      "bob.smith@@example.com"
+    ],
+    "current_role": [
+      {
+        "company": "Google",
+        "end": null,
+        "start": null,
+        "summary": null,
+        "title": "Staff Engineer"
+      }
+    ],
+    "id": "cand_50521f53e239",
+    "name": "Bob Smith"
+  },
+  {
+    "contact_emails": [
+      "carlos.rivera@example.com"
+    ],
+    "current_role": [
+      {
+        "company": "Meta",
+        "end": null,
+        "start": null,
+        "summary": null,
+        "title": "Engineering Manager"
+      }
+    ],
+    "id": "cand_7f7e638ff2c6",
+    "name": "Carlos Rivera",
+    "top_skills": [
+      {
+        "confidence": 0.9405,
+        "name": "Python",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "React",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "GraphQL",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "AWS",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Backend",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Frontend",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      }
+    ]
+  },
+  {
+    "contact_emails": [
+      "eve.martinez@example.com"
+    ],
+    "current_role": [
+      {
+        "company": "Netflix",
+        "end": null,
+        "start": null,
+        "summary": null,
+        "title": "Senior Backend Developer"
+      }
+    ],
+    "id": "cand_906b7f2b8cc7",
+    "name": "Eve Martinez"
+  },
+  {
+    "contact_emails": [
+      "bob.smith@example.com"
+    ],
+    "current_role": [
+      {
+        "company": "Google",
+        "end": null,
+        "start": null,
+        "summary": null,
+        "title": "Staff Software Engineer"
+      }
+    ],
+    "id": "cand_a39860817aaf",
+    "name": "Robert Smith",
+    "top_skills": [
+      {
+        "confidence": 0.9405,
+        "name": "Java",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "C++",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "GCP",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Kubernetes",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Backend",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Python",
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cand_dbb734de5b12",
+    "name": "Unknown"
+  }
+]

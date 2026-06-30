@@ -1,0 +1,12 @@
+{
+  "fields": [
+    {"path": "id", "from": "candidate_id", "type": "string", "required": true},
+    {"path": "name", "from": "full_name", "type": "string", "required": true},
+    {"path": "contact_emails", "from": "emails", "type": "array", "required": false},
+    {"path": "top_skills", "from": "skills", "type": "array", "required": false},
+    {"path": "current_role", "from": "experience", "type": "array", "required": false}
+  ],
+  "include_confidence": false,
+  "include_provenance": false,
+  "on_missing": "omit"
+}

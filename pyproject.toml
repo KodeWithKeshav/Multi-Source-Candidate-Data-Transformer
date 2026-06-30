@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "candidate-data-transformer"
+version = "0.1.0"
+description = "Multi-Source Candidate Data Transformer — ingest, normalize, merge, and project candidate profiles from multiple disagreeing sources."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+dependencies = [
+    "click>=8.1",
+    "pydantic>=2.0",
+    "phonenumbers>=8.13",
+    "requests>=2.31",
+    "rapidfuzz>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-mock>=3.11",
+    "responses>=0.23",
+]
+
+[project.scripts]
+transformer = "transformer.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["transformer*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "network: tests that require network access (GitHub API)",
+]

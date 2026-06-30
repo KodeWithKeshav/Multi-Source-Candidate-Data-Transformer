@@ -1,0 +1,8 @@
+# GitHub usernames — one per line.
+# Real public profiles for live API testing:
+torvalds
+gvanrossum
+defunkt
+
+# Fake username to exercise the 404/failure path:
+thisuserdoesnotexist99999

@@ -1,0 +1,2 @@
+[console_scripts]
+transformer = transformer.__main__:main

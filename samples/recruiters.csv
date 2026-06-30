@@ -1,0 +1,6 @@
+name,email,phone,current_company,title
+Alice Johnson,alice.johnson@example.com,(512) 555-0101,Stripe,Senior Software Engineer
+Bob Smith,bob.smith@@example.com,555-0102,Google,Staff Engineer
+Carlos Rivera,carlos.rivera@example.com,(512) 555-0103,Meta,Engineering Manager
+Diana Chen,diana.chen@example.com,,Microsoft,Principal Engineer
+Eve Martinez,eve.martinez@example.com,(415) 555-0105,Netflix,Senior Backend Developer

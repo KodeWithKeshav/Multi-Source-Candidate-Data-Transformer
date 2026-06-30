@@ -1,0 +1,1 @@
+Spoke with candidate Alice Johnson on Monday. She has 7 yrs experience in backend development, strong in Python and Go. Currently at Stripe as Senior Software Engineer, based in Austin. Open to relocate to San Francisco. Contact: alice.johnson@example.com, phone (512) 555-0101. Has experience with Kubernetes, Docker, and AWS. Interested in principal-level roles.

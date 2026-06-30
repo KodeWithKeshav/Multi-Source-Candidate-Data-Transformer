@@ -1,0 +1,39 @@
+[
+  {
+    "candidate_full_name": "Alice Johnson",
+    "contact_email": "alice.johnson@example.com",
+    "contact_phone": "+15125550101",
+    "employer": "Stripe",
+    "job_title": "Senior Software Engineer",
+    "skill_tags": ["Python", "Go", "Kubernetes", "AWS"],
+    "location": "Austin, TX",
+    "years_experience": 7
+  },
+  {
+    "candidate_full_name": "Robert Smith",
+    "contact_email": "bob.smith@example.com",
+    "employer": "Google",
+    "job_title": "Staff Software Engineer",
+    "skill_tags": ["Java", "C++", "GCP", "Kubernetes"],
+    "location": "San Francisco, CA"
+  },
+  {
+    "candidate_full_name": "Carlos Rivera",
+    "contact_email": "carlos.rivera@example.com",
+    "contact_phone": "+15125550103",
+    "employer": "Meta",
+    "job_title": "Engineering Manager",
+    "skill_tags": ["Python", "React", "GraphQL", "AWS"],
+    "location": "Austin, TX",
+    "years_experience": 10
+  },
+  {
+    "candidate_full_name": "Diana Chen",
+    "contact_email": "diana.chen@example.com",
+    "employer": "Microsoft",
+    "job_title": "Principal Software Engineer",
+    "skill_tags": ["C#", "Azure", "TypeScript", "React"],
+    "location": "Seattle, WA",
+    "years_experience": 12
+  }
+]

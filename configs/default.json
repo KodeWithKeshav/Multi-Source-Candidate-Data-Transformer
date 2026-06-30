@@ -1,0 +1,18 @@
+{
+  "fields": [
+    {"path": "candidate_id", "from": "candidate_id", "type": "string", "required": true},
+    {"path": "full_name", "from": "full_name", "type": "string", "required": true},
+    {"path": "emails", "from": "emails", "type": "array", "required": false},
+    {"path": "phones", "from": "phones", "type": "array", "required": false},
+    {"path": "location", "from": "location", "type": "object", "required": false},
+    {"path": "links", "from": "links", "type": "object", "required": false},
+    {"path": "headline", "from": "headline", "type": "string", "required": false},
+    {"path": "years_experience", "from": "years_experience", "type": "number", "required": false},
+    {"path": "skills", "from": "skills", "type": "array", "required": false},
+    {"path": "experience", "from": "experience", "type": "array", "required": false},
+    {"path": "education", "from": "education", "type": "array", "required": false}
+  ],
+  "include_confidence": true,
+  "include_provenance": true,
+  "on_missing": "null"
+}
