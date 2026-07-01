@@ -4,7 +4,7 @@ A Python CLI tool that ingests candidate data from multiple disagreeing sources 
 
 **Core principles:** Determinism, explainability, and graceful degradation over feature breadth.
 
-## 🚀 Key Features
+## Key Features
 
 - **Multi-Source Ingestion**: Unifies structured (CSV, ATS JSON) and unstructured (GitHub API, Recruiter Notes) data.
 - **Identity Resolution**: Clusters records across sources using email matching and fuzzy name+company fallbacks.
@@ -14,7 +14,7 @@ A Python CLI tool that ingests candidate data from multiple disagreeing sources 
 - **Quality Dashboard**: Computes batch-level metrics (field fill rates, confidence distributions, conflict stats).
 - **Interactive HTML Report**: Generates a completely self-contained, offline HTML report with charts, a candidate explorer, and interactive decision traces.
 
-## 🛠 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -77,7 +77,7 @@ python -m transformer run \
 pytest -v
 ```
 
-## 🏗 Architecture
+## Architecture
 
 The pipeline is implemented as distinct, testable modules:
 
@@ -99,7 +99,7 @@ Ingest & Sniff → Adapt → Normalize → Resolve Identity → Merge & Score �
 | Dashboard | `dashboard.py`| Calculate batch-level quality metrics |
 | Report | `report.py` | Generate the self-contained HTML artifact |
 
-## 🔌 Supported Sources
+## Supported Sources
 
 | Source | Type | Adapter | Method |
 |--------|------|---------|--------|
@@ -108,7 +108,7 @@ Ingest & Sniff → Adapt → Normalize → Resolve Identity → Merge & Score �
 | GitHub API | Unstructured | `github_adapter.py` | `api` |
 | Recruiter Notes | Unstructured | `notes_adapter.py` | `regex` / `heuristic` |
 
-## ⚖️ Confidence Formula
+## Confidence Formula
 
 The confidence score quantifies how trustworthy each field value is, based on source reliability, extraction method, and cross-source agreement.
 
@@ -150,7 +150,7 @@ overall_confidence = weighted mean of all populated field confidences
 
 Only fields with non-null values contribute to the overall score.
 
-## 👥 Identity Resolution Policy
+## Identity Resolution Policy
 
 Observations from different sources are clustered into per-candidate groups using a two-tier strategy:
 
@@ -164,7 +164,7 @@ When no email is available, the system falls back to fuzzy matching using:
 
 **Conservative by design:** The system prefers leaving two records unmerged over false-merging two different people into one profile.
 
-## 🛠 Projection Config
+## Projection Config
 
 The output shape is fully configurable via a JSON config file:
 
@@ -181,7 +181,7 @@ The output shape is fully configurable via a JSON config file:
 }
 ```
 
-## 🚫 Explicitly Descoped
+## Explicitly Descoped
 
 | Feature | Reason |
 |---------|--------|
@@ -189,7 +189,7 @@ The output shape is fully configurable via a JSON config file:
 | **Resume / PDF parsing** | Requires complex document processing libraries (PyPDF, etc.). Out of scope for this version. |
 | **LLM-based extraction** | Violates the determinism requirement. Same input must produce byte-identical output. No randomness, no model inference. |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 transformer/
@@ -216,6 +216,3 @@ transformer/
     └── notes_adapter.py
 ```
 
-## License
-
-MIT
