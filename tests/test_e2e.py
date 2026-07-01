@@ -116,7 +116,8 @@ class TestDefaultConfig:
     """End-to-end test with default projection config."""
 
     def test_produces_valid_profiles(self, sample_data_dir):
-        profiles = _run_offline_pipeline(sample_data_dir)
+        result = _run_offline_pipeline(sample_data_dir)
+        profiles = result.projected
 
         assert len(profiles) >= 2  # at least Alice and Bob
 
@@ -136,7 +137,8 @@ class TestDefaultConfig:
             assert isinstance(profile["provenance"], list)
 
     def test_alice_has_merged_data(self, sample_data_dir):
-        profiles = _run_offline_pipeline(sample_data_dir)
+        result = _run_offline_pipeline(sample_data_dir)
+        profiles = result.projected
 
         # Find Alice's profile
         alice = None
@@ -162,7 +164,8 @@ class TestCustomConfig:
 
     def test_custom_field_names(self, sample_data_dir):
         config_path = str(sample_data_dir / "custom.json")
-        profiles = _run_offline_pipeline(sample_data_dir, config_path=config_path)
+        result = _run_offline_pipeline(sample_data_dir, config_path=config_path)
+        profiles = result.projected
 
         assert len(profiles) >= 2
 
@@ -191,10 +194,10 @@ class TestDeterminism:
 
     def test_byte_identical_output(self, sample_data_dir):
         """Run the pipeline twice and compare JSON output byte-for-byte."""
-        profiles_1 = _run_offline_pipeline(sample_data_dir)
-        profiles_2 = _run_offline_pipeline(sample_data_dir)
+        result_1 = _run_offline_pipeline(sample_data_dir)
+        result_2 = _run_offline_pipeline(sample_data_dir)
 
-        json_1 = json.dumps(profiles_1, indent=2, sort_keys=True, ensure_ascii=False)
-        json_2 = json.dumps(profiles_2, indent=2, sort_keys=True, ensure_ascii=False)
+        json_1 = json.dumps(result_1.projected, indent=2, sort_keys=True, ensure_ascii=False)
+        json_2 = json.dumps(result_2.projected, indent=2, sort_keys=True, ensure_ascii=False)
 
         assert json_1 == json_2, "Pipeline output must be byte-identical across runs"

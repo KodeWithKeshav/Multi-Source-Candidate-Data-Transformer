@@ -166,3 +166,38 @@ class TestOverallConfidence:
 
     def test_empty_merged_returns_zero(self):
         assert compute_overall_confidence({}) == 0.0
+
+
+class TestConfidenceCap:
+    """Confidence scores must never exceed 1.0."""
+
+    def test_three_agreeing_high_tier_sources_capped_at_one(self):
+        """Three ATS sources agreeing would produce 0.9 × 0.95 × 1.2 = 1.026
+        without a cap. With the cap, the confidence must be exactly 1.0."""
+        obs = [
+            FieldObservation(
+                path="full_name",
+                value="Alice Johnson",
+                source=SourceType.ATS,
+                method=ExtractionMethod.ALIAS_MAP,
+                candidate_key_hint="alice@example.com",
+            ),
+            FieldObservation(
+                path="full_name",
+                value="Alice Johnson",
+                source=SourceType.CSV,
+                method=ExtractionMethod.DIRECT,
+                candidate_key_hint="alice@example.com",
+            ),
+            FieldObservation(
+                path="full_name",
+                value="Alice Johnson",
+                source=SourceType.NOTES,
+                method=ExtractionMethod.REGEX,
+                candidate_key_hint="alice@example.com",
+            ),
+        ]
+        merged, _ = merge_observations(obs)
+        conf = merged["full_name"].confidence
+        assert conf <= 1.0, f"Confidence {conf} exceeds 1.0"
+        assert conf == 1.0, f"Expected exactly 1.0 for capped high-agreement, got {conf}"
