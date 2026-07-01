@@ -18,6 +18,7 @@ out of scope for this project. See README for details.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 import requests
@@ -196,8 +197,12 @@ def fetch_github_profile(username: str) -> dict[str, Any]:
     Returns the parsed JSON dict, or an empty dict on failure.
     """
     url = f"{GITHUB_API_BASE}/users/{username}"
+    headers = {}
+    if token := os.environ.get("GITHUB_TOKEN"):
+        headers["Authorization"] = f"token {token}"
+        
     try:
-        resp = requests.get(url, timeout=REQUEST_TIMEOUT)
+        resp = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
         if resp.status_code == 200:
             return resp.json()
         elif resp.status_code == 404:
@@ -219,9 +224,13 @@ def fetch_github_repos(username: str) -> list[dict[str, Any]]:
     Returns a list of repo dicts, or an empty list on failure.
     """
     url = f"{GITHUB_API_BASE}/users/{username}/repos"
+    headers = {}
+    if token := os.environ.get("GITHUB_TOKEN"):
+        headers["Authorization"] = f"token {token}"
+
     try:
         resp = requests.get(
-            url, params={"per_page": 100, "sort": "updated"}, timeout=REQUEST_TIMEOUT
+            url, headers=headers, params={"per_page": 100, "sort": "updated"}, timeout=REQUEST_TIMEOUT
         )
         if resp.status_code == 200:
             return resp.json()

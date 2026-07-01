@@ -197,7 +197,7 @@ def _merge_scalar_field(
     agreement_boost = min(1.0 + 0.1 * (len(agreeing) - 1), 1.3)
     tw = weights.get(winner.source.value, 0.5)
     mc = METHOD_CERTAINTY.get(winner.method.value, 0.5)
-    confidence = round(tw * mc * agreement_boost, 4)
+    confidence = round(min(tw * mc * agreement_boost, 1.0), 4)
 
     # Log all observations in provenance.
     for _score, obs in scored:
@@ -274,7 +274,7 @@ def _merge_list_field(
         })
 
     agreement_boost = min(1.0 + 0.1 * (len(sources) - 1), 1.3)
-    confidence = round(best_tw * best_mc * agreement_boost, 4)
+    confidence = round(min(best_tw * best_mc * agreement_boost, 1.0), 4)
 
     return MergedField(
         path=path,
@@ -295,4 +295,4 @@ def compute_overall_confidence(merged: dict[str, MergedField]) -> float:
     confidences = [f.confidence for f in merged.values() if f.value is not None]
     if not confidences:
         return 0.0
-    return round(sum(confidences) / len(confidences), 4)
+    return round(min(sum(confidences) / len(confidences), 1.0), 4)

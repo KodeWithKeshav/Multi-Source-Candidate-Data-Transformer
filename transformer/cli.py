@@ -3,6 +3,9 @@
 Orchestrates the full pipeline:
     Ingest → Adapt → Normalize → Resolve Identity → Merge → Assemble → Project → Validate → Write
 
+Optionally generates:
+    Decision Log (JSON) + Quality Dashboard (JSON) + HTML Report
+
 Uses ``click`` for argument parsing. All source flags are optional,
 but at least one structured (CSV or ATS) and one unstructured (GitHub
 or notes) source must be supplied.
@@ -57,6 +60,33 @@ def _setup_logging(verbose: bool = False) -> None:
 
 
 # ------------------------------------------------------------------
+# Pipeline result container
+# ------------------------------------------------------------------
+
+class PipelineResult:
+    """Container for all pipeline outputs — both final and intermediate."""
+
+    __slots__ = (
+        "projected", "candidate_profiles", "warnings",
+        "total_observations", "sources_used",
+    )
+
+    def __init__(
+        self,
+        projected: list[dict],
+        candidate_profiles: list,
+        warnings: list[str],
+        total_observations: int,
+        sources_used: set[str],
+    ):
+        self.projected = projected
+        self.candidate_profiles = candidate_profiles
+        self.warnings = warnings
+        self.total_observations = total_observations
+        self.sources_used = sources_used
+
+
+# ------------------------------------------------------------------
 # Pipeline orchestrator
 # ------------------------------------------------------------------
 
@@ -67,10 +97,11 @@ def run_pipeline(
     notes_paths: list[str],
     config_path: str | None,
     tier_weights: dict[str, float] | None = None,
-) -> list[dict]:
+) -> PipelineResult:
     """Execute the full transformation pipeline.
 
-    Returns a list of projected+validated output dicts (one per candidate).
+    Returns a ``PipelineResult`` containing projected outputs and
+    intermediate data needed for report generation.
     """
     warnings: list[str] = []
 
@@ -153,7 +184,10 @@ def run_pipeline(
 
     if not all_observations:
         logger.error("No observations produced from any source.")
-        return []
+        return PipelineResult(
+            projected=[], candidate_profiles=[], warnings=warnings,
+            total_observations=0, sources_used=set(),
+        )
 
     # ---- 3. Normalize ----
     all_observations = normalize_observations(all_observations)
@@ -162,10 +196,12 @@ def run_pipeline(
     clusters = resolve_identities(all_observations)
 
     # ---- 5–6. Merge & Assemble per candidate ----
-    profiles: list[dict] = []
+    projected_outputs: list[dict] = []
+    candidate_profiles = []
     for cid, obs_group in sorted(clusters.items()):
         merged, provenance_log = merge_observations(obs_group, tier_weights)
         profile = assemble_profile(cid, merged, provenance_log)
+        candidate_profiles.append(profile)
 
         # ---- 7. Project ----
         projected = project(profile, proj_config)
@@ -173,7 +209,7 @@ def run_pipeline(
         # ---- 8. Validate ----
         try:
             validated = validate_output(projected, proj_config)
-            profiles.append(validated)
+            projected_outputs.append(validated)
         except ValidationError as exc:
             msg = f"Validation failed for candidate {cid}: {exc}"
             logger.warning(msg)
@@ -187,7 +223,7 @@ def run_pipeline(
     click.echo(f"\n{'='*60}", err=True)
     click.echo(f"  Run Summary", err=True)
     click.echo(f"{'='*60}", err=True)
-    click.echo(f"  Candidates produced : {len(profiles)}", err=True)
+    click.echo(f"  Candidates produced : {len(projected_outputs)}", err=True)
     click.echo(f"  Sources used        : {', '.join(sorted(sources_used))}", err=True)
     click.echo(f"  Total observations  : {len(all_observations)}", err=True)
     if warnings:
@@ -198,7 +234,13 @@ def run_pipeline(
         click.echo(f"  Warnings            : 0", err=True)
     click.echo(f"{'='*60}\n", err=True)
 
-    return profiles
+    return PipelineResult(
+        projected=projected_outputs,
+        candidate_profiles=candidate_profiles,
+        warnings=warnings,
+        total_observations=len(all_observations),
+        sources_used=sources_used,
+    )
 
 
 # ------------------------------------------------------------------
@@ -224,6 +266,8 @@ def cli() -> None:
               help="Path to a projection config JSON file. Defaults to full schema.")
 @click.option("--out", "out_path", type=click.Path(), required=True,
               help="Output path for the result JSON file.")
+@click.option("--report", "generate_report", is_flag=True, default=False,
+              help="Generate HTML report + decision log + quality dashboard.")
 @click.option("--verbose", "-v", is_flag=True, default=False,
               help="Enable verbose (debug) logging.")
 def run(
@@ -233,6 +277,7 @@ def run(
     notes_patterns: tuple[str, ...],
     config_path: str | None,
     out_path: str,
+    generate_report: bool,
     verbose: bool,
 ) -> None:
     """Run the transformation pipeline."""
@@ -262,7 +307,7 @@ def run(
         sys.exit(1)
 
     # Run pipeline
-    profiles = run_pipeline(
+    result = run_pipeline(
         csv_paths=list(csv_paths),
         ats_paths=list(ats_paths),
         github_user_files=list(github_user_files),
@@ -270,10 +315,51 @@ def run(
         config_path=config_path,
     )
 
-    # Write output — deterministic (sorted keys, consistent formatting)
+    # Write projected output — deterministic (sorted keys, consistent formatting)
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    output_json = json.dumps(profiles, indent=2, sort_keys=True, ensure_ascii=False)
+    output_json = json.dumps(result.projected, indent=2, sort_keys=True, ensure_ascii=False)
     out.write_text(output_json + "\n", encoding="utf-8")
-
     click.echo(f"Output written to {out_path}", err=True)
+
+    # ---- Optional: Generate report artifacts ----
+    if generate_report and result.candidate_profiles:
+        from transformer.dashboard import compile_dashboard
+        from transformer.explain import compile_all_decision_logs
+        from transformer.report import generate_report as gen_report
+
+        out_dir = out.parent
+
+        # Decision logs
+        decision_logs = compile_all_decision_logs(result.candidate_profiles)
+        decision_path = out_dir / "decision_log.json"
+        decision_path.write_text(
+            json.dumps(decision_logs, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        click.echo(f"Decision log written to {decision_path}", err=True)
+
+        # Quality dashboard
+        dashboard = compile_dashboard(
+            profiles=result.candidate_profiles,
+            total_observations=result.total_observations,
+            sources_used=result.sources_used,
+            warnings=result.warnings,
+        )
+        dashboard_path = out_dir / "quality_dashboard.json"
+        dashboard_path.write_text(
+            json.dumps(dashboard, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        click.echo(f"Quality dashboard written to {dashboard_path}", err=True)
+
+        # HTML report
+        report_path = out_dir / "report.html"
+        gen_report(
+            projected_candidates=result.projected,
+            decision_logs=decision_logs,
+            quality_dashboard=dashboard,
+            warnings=result.warnings,
+            output_path=str(report_path),
+        )
+        click.echo(f"HTML report written to {report_path}", err=True)
