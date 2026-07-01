@@ -192,27 +192,33 @@ The output shape is fully configurable via a JSON config file:
 ## Project Structure
 
 ```
-transformer/
-├── __init__.py
-├── __main__.py          # Entry point
-├── cli.py               # Click CLI (handles --report)
-├── models.py            # SourceDocument, FieldObservation, ProjectionConfig
-├── schema.py            # CandidateProfile (canonical model)
-├── ingest.py            # Source detection & wrapping
-├── normalize.py         # Phone, date, country, skill normalization
-├── identity.py          # Identity resolution / clustering
-├── merge.py             # Merge & confidence scoring
-├── assemble.py          # Build CandidateProfile
-├── project.py           # Output projection
-├── validate.py          # Output validation
-├── dashboard.py         # Quality dashboard metrics compilation
-├── explain.py           # Decision log generation
-├── report.py            # Self-contained HTML report generation
-└── adapters/
-    ├── base.py
-    ├── csv_adapter.py
-    ├── ats_adapter.py
-    ├── github_adapter.py
-    └── notes_adapter.py
+├── configs/             # Configuration files
+├── samples/             # Sample input data
+├── tests/               # Pytest test suite
+├── transformer/         # Main package
+│   ├── __init__.py
+│   ├── __main__.py          # Entry point
+│   ├── cli.py               # Click CLI (handles --report)
+│   ├── models.py            # SourceDocument, FieldObservation, ProjectionConfig
+│   ├── schema.py            # CandidateProfile (canonical model)
+│   ├── ingest.py            # Source detection & wrapping
+│   ├── normalize.py         # Phone, date, country, skill normalization
+│   ├── identity.py          # Identity resolution / clustering
+│   ├── merge.py             # Merge & confidence scoring
+│   ├── assemble.py          # Build CandidateProfile
+│   ├── project.py           # Output projection
+│   ├── validate.py          # Output validation
+│   ├── dashboard.py         # Quality dashboard metrics compilation
+│   ├── explain.py           # Decision log generation
+│   ├── report.py            # Self-contained HTML report generation
+│   └── adapters/
+│       ├── __init__.py
+│       ├── ats_adapter.py
+│       ├── base.py
+│       ├── csv_adapter.py
+│       ├── github_adapter.py
+│       └── notes_adapter.py
+├── pyproject.toml       # Project metadata and dependencies
+└── README.md
 ```
 
