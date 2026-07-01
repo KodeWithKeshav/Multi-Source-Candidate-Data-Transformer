@@ -4,7 +4,17 @@ A Python CLI tool that ingests candidate data from multiple disagreeing sources 
 
 **Core principles:** Determinism, explainability, and graceful degradation over feature breadth.
 
-## Quick Start
+## 🚀 Key Features
+
+- **Multi-Source Ingestion**: Unifies structured (CSV, ATS JSON) and unstructured (GitHub API, Recruiter Notes) data.
+- **Identity Resolution**: Clusters records across sources using email matching and fuzzy name+company fallbacks.
+- **Confidence Scoring**: Intelligently scores merged data based on source reliability, extraction method, and cross-source agreement.
+- **Dynamic Projection**: Shapes the final JSON output at runtime using a configurable projection schema.
+- **Explainability**: Generates a detailed JSON decision log tracing exactly *why* a specific field value won, which sources agreed, and what values lost.
+- **Quality Dashboard**: Computes batch-level metrics (field fill rates, confidence distributions, conflict stats).
+- **Interactive HTML Report**: Generates a completely self-contained, offline HTML report with charts, a candidate explorer, and interactive decision traces.
+
+## 🛠 Quick Start
 
 ### Installation
 
@@ -16,7 +26,9 @@ cd Multi-Source-Candidate-Data-Transformer
 pip install -e ".[dev]"
 ```
 
-### Run with default config (all fields, full provenance)
+### Run with HTML Report (Recommended)
+
+To generate the projected JSON profiles **along with** the interactive HTML report, decision log, and quality dashboard, use the `--report` flag:
 
 ```bash
 python -m transformer run \
@@ -24,8 +36,18 @@ python -m transformer run \
   --ats samples/ats_export.json \
   --notes "samples/notes/*.txt" \
   --config configs/default.json \
-  --out out/profiles.json
+  --out out/profiles.json \
+  --report
 ```
+
+This command produces four artifacts in the `out/` directory:
+1. `profiles.json` (The final transformed candidate data)
+2. `decision_log.json` (Per-candidate decision traces)
+3. `quality_dashboard.json` (Batch-level metrics)
+4. `report.html` (Interactive dashboard and explorer)
+
+> [!TIP]
+> Open `out/report.html` in any web browser. It is fully self-contained and runs offline with zero dependencies!
 
 ### Run with custom config (subset of fields, renamed, no provenance)
 
@@ -55,13 +77,7 @@ python -m transformer run \
 pytest -v
 ```
 
-To include tests that call the live GitHub API:
-
-```bash
-pytest -v -m "network or not network"
-```
-
-## Architecture
+## 🏗 Architecture
 
 The pipeline is implemented as distinct, testable modules:
 
@@ -79,8 +95,11 @@ Ingest & Sniff → Adapt → Normalize → Resolve Identity → Merge & Score �
 | Assemble | `assemble.py` | Build canonical `CandidateProfile` model |
 | Project | `project.py` | Apply output projection config (field subset, renames) |
 | Validate | `validate.py` | Validate projected output, apply `on_missing` behavior |
+| Explain | `explain.py` | Trace merge decisions to produce the Decision Log |
+| Dashboard | `dashboard.py`| Calculate batch-level quality metrics |
+| Report | `report.py` | Generate the self-contained HTML artifact |
 
-## Supported Sources
+## 🔌 Supported Sources
 
 | Source | Type | Adapter | Method |
 |--------|------|---------|--------|
@@ -89,15 +108,17 @@ Ingest & Sniff → Adapt → Normalize → Resolve Identity → Merge & Score �
 | GitHub API | Unstructured | `github_adapter.py` | `api` |
 | Recruiter Notes | Unstructured | `notes_adapter.py` | `regex` / `heuristic` |
 
-## Confidence Formula
+## ⚖️ Confidence Formula
 
 The confidence score quantifies how trustworthy each field value is, based on source reliability, extraction method, and cross-source agreement.
 
 ### Per-Field Confidence
 
 ```
-field_confidence = base_tier_weight × method_certainty × agreement_boost
+field_confidence = min(base_tier_weight × method_certainty × agreement_boost, 1.0)
 ```
+
+> Capped at **1.0** — confidence is a normalized certainty score. The agreement boost rewards cross-source confirmation up to absolute certainty but cannot exceed it.
 
 Where:
 
@@ -129,37 +150,21 @@ overall_confidence = weighted mean of all populated field confidences
 
 Only fields with non-null values contribute to the overall score.
 
-### Example
-
-If the ATS and CSV both report `full_name = "Alice Johnson"`:
-
-```
-base_tier_weight = 0.9  (ATS wins — higher tier)
-method_certainty = 0.95 (alias_map)
-agreement_boost  = 1.1  (2 sources agree)
-
-field_confidence = 0.9 × 0.95 × 1.1 = 0.9405
-```
-
-## Identity Resolution Policy
+## 👥 Identity Resolution Policy
 
 Observations from different sources are clustered into per-candidate groups using a two-tier strategy:
 
 ### Strong Key: Email Match (Primary)
-
-If two observations share the same email address (case-insensitive), they are clustered together. This is the most reliable signal and handles cases where the same person's name is spelled differently across sources (e.g., "Bob Smith" in CSV vs "Robert Smith" in ATS).
+If two observations share the same email address (case-insensitive), they are clustered together. This is the most reliable signal.
 
 ### Weak Key: Fuzzy Name + Company Match (Fallback)
-
 When no email is available, the system falls back to fuzzy matching using:
-- **Normalized name comparison** via `rapidfuzz` token-sort ratio
-- A **conservative threshold of ≥ 85%** similarity
+- Normalized name comparison via `rapidfuzz` token-sort ratio
+- A conservative threshold of ≥ 85% similarity
 
-**Conservative by design:** The system prefers leaving two records unmerged (producing two separate profiles) over false-merging two different people into one profile. A false merge corrupts data; an unmerged duplicate is merely redundant.
+**Conservative by design:** The system prefers leaving two records unmerged over false-merging two different people into one profile.
 
-Each cluster's resolution method (`email` or `fuzzy_name_company`) is logged for auditability.
-
-## Projection Config
+## 🛠 Projection Config
 
 The output shape is fully configurable via a JSON config file:
 
@@ -176,11 +181,7 @@ The output shape is fully configurable via a JSON config file:
 }
 ```
 
-- **`path`**: Output field name (supports renaming)
-- **`from`**: Canonical model field to read from
-- **`on_missing`**: `"null"` (fill with null), `"omit"` (drop the key), or `"error"` (raise an error)
-
-## Explicitly Descoped
+## 🚫 Explicitly Descoped
 
 | Feature | Reason |
 |---------|--------|
@@ -188,13 +189,13 @@ The output shape is fully configurable via a JSON config file:
 | **Resume / PDF parsing** | Requires complex document processing libraries (PyPDF, etc.). Out of scope for this version. |
 | **LLM-based extraction** | Violates the determinism requirement. Same input must produce byte-identical output. No randomness, no model inference. |
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 transformer/
 ├── __init__.py
 ├── __main__.py          # Entry point
-├── cli.py               # Click CLI
+├── cli.py               # Click CLI (handles --report)
 ├── models.py            # SourceDocument, FieldObservation, ProjectionConfig
 ├── schema.py            # CandidateProfile (canonical model)
 ├── ingest.py            # Source detection & wrapping
@@ -204,12 +205,15 @@ transformer/
 ├── assemble.py          # Build CandidateProfile
 ├── project.py           # Output projection
 ├── validate.py          # Output validation
+├── dashboard.py         # Quality dashboard metrics compilation
+├── explain.py           # Decision log generation
+├── report.py            # Self-contained HTML report generation
 └── adapters/
-    ├── base.py          # BaseAdapter ABC
-    ├── csv_adapter.py   # Recruiter CSV
-    ├── ats_adapter.py   # ATS JSON
-    ├── github_adapter.py # GitHub API
-    └── notes_adapter.py  # Recruiter notes
+    ├── base.py
+    ├── csv_adapter.py
+    ├── ats_adapter.py
+    ├── github_adapter.py
+    └── notes_adapter.py
 ```
 
 ## License

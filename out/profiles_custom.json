@@ -16,51 +16,114 @@
     "name": "Alice Johnson",
     "top_skills": [
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "Python",
         "sources": [
-          "ats",
-          "notes"
+          "ats"
         ]
       },
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "Go",
         "sources": [
-          "ats",
-          "notes"
+          "ats"
         ]
       },
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "Kubernetes",
         "sources": [
-          "ats",
-          "notes"
+          "ats"
         ]
       },
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "AWS",
         "sources": [
-          "ats",
-          "notes"
+          "ats"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cand_35d414463d4f",
+    "name": "Chris Wanstrath",
+    "top_skills": [
+      {
+        "confidence": 0.765,
+        "name": "Ruby",
+        "sources": [
+          "github"
         ]
       },
       {
-        "confidence": 0.9405,
-        "name": "Backend",
+        "confidence": 0.765,
+        "name": "JavaScript",
         "sources": [
-          "ats",
-          "notes"
+          "github"
         ]
       },
       {
-        "confidence": 0.9405,
-        "name": "Docker",
+        "confidence": 0.765,
+        "name": "Emacs Lisp",
         "sources": [
-          "ats",
-          "notes"
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "Python",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "C",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "Coffeescript",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "CSS",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "HTML",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "Io",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "Objective-C",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "PHP",
+        "sources": [
+          "github"
         ]
       }
     ]
@@ -129,6 +192,66 @@
   },
   {
     "contact_emails": [
+      "guido@python.org"
+    ],
+    "current_role": [
+      {
+        "company": "Microsoft",
+        "end": null,
+        "start": null,
+        "summary": null,
+        "title": "Distinguished Engineer"
+      }
+    ],
+    "id": "cand_7882a26a7fa9",
+    "name": "Guido van Rossum",
+    "top_skills": [
+      {
+        "confidence": 0.765,
+        "name": "Python",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "C",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "HTML",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "C++",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "JavaScript",
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.765,
+        "name": "TypeScript",
+        "sources": [
+          "github"
+        ]
+      }
+    ]
+  },
+  {
+    "contact_emails": [
       "carlos.rivera@example.com"
     ],
     "current_role": [
@@ -144,51 +267,31 @@
     "name": "Carlos Rivera",
     "top_skills": [
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "Python",
         "sources": [
-          "ats",
-          "notes"
+          "ats"
         ]
       },
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "React",
         "sources": [
-          "ats",
-          "notes"
+          "ats"
         ]
       },
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "GraphQL",
         "sources": [
-          "ats",
-          "notes"
+          "ats"
         ]
       },
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "AWS",
         "sources": [
-          "ats",
-          "notes"
-        ]
-      },
-      {
-        "confidence": 0.9405,
-        "name": "Backend",
-        "sources": [
-          "ats",
-          "notes"
-        ]
-      },
-      {
-        "confidence": 0.9405,
-        "name": "Frontend",
-        "sources": [
-          "ats",
-          "notes"
+          "ats"
         ]
       }
     ]
@@ -226,11 +329,81 @@
     "name": "Robert Smith",
     "top_skills": [
       {
-        "confidence": 0.9405,
+        "confidence": 0.855,
         "name": "Java",
         "sources": [
+          "ats"
+        ]
+      },
+      {
+        "confidence": 0.855,
+        "name": "C++",
+        "sources": [
+          "ats"
+        ]
+      },
+      {
+        "confidence": 0.855,
+        "name": "GCP",
+        "sources": [
+          "ats"
+        ]
+      },
+      {
+        "confidence": 0.855,
+        "name": "Kubernetes",
+        "sources": [
+          "ats"
+        ]
+      }
+    ]
+  },
+  {
+    "contact_emails": [
+      "torvalds@linux-foundation.org"
+    ],
+    "current_role": [
+      {
+        "company": "Linux Foundation",
+        "end": null,
+        "start": null,
+        "summary": null,
+        "title": "Fellow"
+      }
+    ],
+    "id": "cand_b75e61f553f5",
+    "name": "Linus Torvalds",
+    "top_skills": [
+      {
+        "confidence": 0.9405,
+        "name": "C",
+        "sources": [
           "ats",
-          "notes"
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Linux",
+        "sources": [
+          "ats",
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Git",
+        "sources": [
+          "ats",
+          "github"
+        ]
+      },
+      {
+        "confidence": 0.9405,
+        "name": "Kernel Development",
+        "sources": [
+          "ats",
+          "github"
         ]
       },
       {
@@ -238,45 +411,17 @@
         "name": "C++",
         "sources": [
           "ats",
-          "notes"
+          "github"
         ]
       },
       {
         "confidence": 0.9405,
-        "name": "GCP",
+        "name": "Openscad",
         "sources": [
           "ats",
-          "notes"
-        ]
-      },
-      {
-        "confidence": 0.9405,
-        "name": "Kubernetes",
-        "sources": [
-          "ats",
-          "notes"
-        ]
-      },
-      {
-        "confidence": 0.9405,
-        "name": "Backend",
-        "sources": [
-          "ats",
-          "notes"
-        ]
-      },
-      {
-        "confidence": 0.9405,
-        "name": "Python",
-        "sources": [
-          "ats",
-          "notes"
+          "github"
         ]
       }
     ]
-  },
-  {
-    "id": "cand_dbb734de5b12",
-    "name": "Unknown"
   }
 ]

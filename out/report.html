@@ -1,0 +1,4656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Transformer — Execution Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --bg-card: #1a1d27;
+            --bg-card-hover: #22263a;
+            --bg-subtle: #161922;
+            --text: #e2e8f0;
+            --text-muted: #8892a4;
+            --text-dim: #5a6478;
+            --border: #2a2f3e;
+            --primary: #6366f1;
+            --primary-light: rgba(99,102,241,0.12);
+            --primary-glow: rgba(99,102,241,0.3);
+            --success: #22c55e;
+            --success-light: rgba(34,197,94,0.12);
+            --warning: #f59e0b;
+            --warning-light: rgba(245,158,11,0.12);
+            --error: #ef4444;
+            --error-light: rgba(239,68,68,0.12);
+            --accent: #8b5cf6;
+            --gradient-start: #6366f1;
+            --gradient-end: #8b5cf6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1500px; margin: 0 auto; }
+
+        /* Header */
+        header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        /* Buttons */
+        .btn-group { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.5rem 1rem; font-size: 0.82rem; font-weight: 500;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 8px; cursor: pointer; transition: all 0.2s;
+            color: var(--text); text-decoration: none; font-family: inherit;
+        }
+        .btn:hover { background: var(--bg-card-hover); border-color: var(--primary); }
+        .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .btn-primary:hover { background: #5558e6; }
+
+        /* Tabs */
+        .tabs {
+            display: flex; border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem; gap: 0.25rem;
+        }
+        .tab-btn {
+            padding: 0.75rem 1.25rem; font-size: 0.9rem; font-weight: 500;
+            color: var(--text-muted); border: none; background: none;
+            cursor: pointer; border-bottom: 2px solid transparent;
+            transition: all 0.2s; font-family: inherit;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+        /* Widget Cards */
+        .grid-widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.25rem; margin-bottom: 2rem;
+        }
+        .widget-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1.5rem;
+            display: flex; flex-direction: column; gap: 0.5rem;
+            transition: border-color 0.2s;
+        }
+        .widget-card:hover { border-color: var(--primary); }
+        .widget-label {
+            font-size: 0.75rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
+        }
+        .widget-val { font-size: 2rem; font-weight: 700; color: var(--primary); }
+
+        /* Dashboard Charts */
+        .dashboard-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;
+        }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        .chart-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1.5rem;
+        }
+        .chart-title {
+            font-size: 1rem; font-weight: 600; margin-bottom: 1.5rem;
+            color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;
+        }
+
+        /* Bar Charts */
+        .bar-chart { width: 100%; display: flex; flex-direction: column; gap: 0.6rem; }
+        .bar-row { display: flex; align-items: center; gap: 0.75rem; }
+        .bar-label {
+            width: 160px; font-size: 0.8rem; color: var(--text-muted);
+            text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .bar-track {
+            flex-grow: 1; background: rgba(255,255,255,0.04);
+            height: 18px; border-radius: 6px; overflow: hidden;
+        }
+        .bar-fill {
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            height: 100%; border-radius: 6px; transition: width 0.6s ease;
+        }
+        .bar-val { width: 50px; font-size: 0.8rem; font-weight: 600; color: var(--text); }
+
+        /* Candidate Explorer */
+        .explorer-layout { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; }
+        @media (max-width: 900px) { .explorer-layout { grid-template-columns: 1fr; } }
+
+        .candidate-list {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; max-height: 800px; overflow-y: auto;
+        }
+        .candidate-item {
+            padding: 1.25rem; border-bottom: 1px solid var(--border);
+            cursor: pointer; transition: all 0.2s; border-left: 3px solid transparent;
+        }
+        .candidate-item:hover { background: var(--bg-card-hover); }
+        .candidate-item.active { background: var(--primary-light); border-left-color: var(--primary); }
+        .cand-name { font-weight: 600; font-size: 0.92rem; }
+        .cand-id { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+        /* Collapsible Cards */
+        details.collapse-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; overflow: hidden; margin-bottom: 1rem;
+        }
+        details.collapse-card summary {
+            padding: 1rem 1.25rem; font-weight: 600; font-size: 0.95rem;
+            cursor: pointer; background: var(--bg-subtle); user-select: none;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid transparent; transition: all 0.2s;
+        }
+        details.collapse-card[open] summary {
+            background: rgba(99,102,241,0.06); border-bottom-color: var(--border);
+        }
+        details.collapse-card .card-body { padding: 1.25rem; }
+
+        /* Profile Grid */
+        .profile-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;
+        }
+        .profile-field {
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 0.75rem 1rem; background: var(--bg-subtle);
+        }
+        .pf-label {
+            font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .pf-val { font-size: 0.9rem; font-weight: 500; margin-top: 0.2rem; word-break: break-all; }
+
+        /* Field Decision Cards */
+        .field-card {
+            border: 1px solid var(--border); border-radius: 10px;
+            background: var(--bg-card); overflow: hidden; margin-bottom: 1rem;
+        }
+        .field-header {
+            background: var(--bg-subtle); padding: 0.75rem 1.25rem;
+            font-weight: 700; font-size: 0.85rem; display: flex;
+            justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .field-body { padding: 1.25rem; }
+        .field-explain {
+            padding: 1rem 1.25rem; background: rgba(99,102,241,0.04);
+            border-top: 1px solid var(--border); font-size: 0.85rem;
+        }
+        .explain-label {
+            font-weight: 600; font-size: 0.72rem; text-transform: uppercase;
+            color: var(--primary); margin-bottom: 0.4rem; letter-spacing: 0.05em;
+        }
+
+        .contender {
+            display: flex; gap: 1rem; margin-bottom: 0.6rem; font-size: 0.82rem;
+            border-left: 2px solid var(--border); padding-left: 1rem; margin-left: 0.5rem;
+        }
+        .contender-label { width: 80px; font-weight: 600; color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; }
+        .contender-val { flex: 1; }
+
+        code {
+            background: rgba(255,255,255,0.06); padding: 0.1rem 0.4rem;
+            border-radius: 4px; font-size: 0.8rem; font-family: 'SF Mono', monospace;
+        }
+
+        /* Confidence Badges */
+        .badge {
+            display: inline-flex; align-items: center; padding: 0.2rem 0.65rem;
+            border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+        }
+        .badge-high { background: var(--success-light); color: var(--success); }
+        .badge-med { background: var(--warning-light); color: var(--warning); }
+        .badge-low { background: var(--error-light); color: var(--error); }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th, td { padding: 0.65rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg-subtle); font-weight: 600; color: var(--text-muted); }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 0.75rem;
+            border: 1px solid transparent; font-size: 0.85rem;
+        }
+        .alert-error { background: var(--error-light); border-color: rgba(239,68,68,0.2); color: var(--error); }
+        .alert-warning { background: var(--warning-light); border-color: rgba(245,158,11,0.2); color: var(--warning); }
+        .alert-info { background: var(--primary-light); border-color: rgba(99,102,241,0.2); color: #93a3f8; }
+
+        pre {
+            background: #0d0f14; color: #c9d1d9; padding: 1rem;
+            border-radius: 8px; overflow-x: auto; font-size: 0.8rem;
+            max-height: 400px; border: 1px solid var(--border);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Candidate Transformer</h1>
+                <div class="subtitle">Pipeline Execution Report — Decision Traces & Quality Dashboard</div>
+            </div>
+            <div class="btn-group">
+                <button class="btn" onclick="downloadFile('projected')">⬇ Projected JSON</button>
+                <button class="btn" onclick="downloadFile('decision')">⬇ Decision Log</button>
+                <button class="btn" onclick="downloadFile('dashboard')">⬇ Dashboard</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('summary')">Run Summary</button>
+            <button class="tab-btn" onclick="switchTab('explorer')">Candidate Explorer</button>
+            <button class="tab-btn" onclick="switchTab('validation')">Validation Log</button>
+        </div>
+
+        <!-- SUMMARY TAB -->
+        <div id="tab-summary" class="tab-content active">
+            <div class="grid-widgets">
+                <div class="widget-card">
+                    <span class="widget-label">Candidates Produced</span>
+                    <span class="widget-val" id="w-candidates">-</span>
+                </div>
+                <div class="widget-card">
+                    <span class="widget-label">Observations Ingested</span>
+                    <span class="widget-val" id="w-observations">-</span>
+                </div>
+                <div class="widget-card">
+                    <span class="widget-label">Sources Used</span>
+                    <span class="widget-val" id="w-sources">-</span>
+                </div>
+                <div class="widget-card">
+                    <span class="widget-label">Conflicts Detected</span>
+                    <span class="widget-val" id="w-conflicts" style="color:var(--warning);">-</span>
+                </div>
+                <div class="widget-card">
+                    <span class="widget-label">Warnings</span>
+                    <span class="widget-val" id="w-warnings" style="color:var(--error);">-</span>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Confidence per Canonical Field</div>
+                    <div id="confidence-chart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Resolution Metrics</div>
+                    <div id="metrics-chart"></div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Schema Coverage</div>
+                <div id="coverage-chart"></div>
+            </div>
+        </div>
+
+        <!-- EXPLORER TAB -->
+        <div id="tab-explorer" class="tab-content">
+            <div class="explorer-layout">
+                <div class="candidate-list" id="cand-list"></div>
+                <div id="cand-detail">
+                    <div style="color:var(--text-muted);text-align:center;padding-top:150px;">
+                        Select a candidate from the sidebar to explore decision traces.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VALIDATION TAB -->
+        <div id="tab-validation" class="tab-content">
+            <div class="chart-card">
+                <div class="chart-title">Pipeline Warnings & Validation Alerts</div>
+                <div id="validation-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const projected = [
+  {
+    "candidate_id": "cand_1079ed8c61d3",
+    "full_name": "Alice Johnson",
+    "emails": [
+      "alice.johnson@example.com"
+    ],
+    "phones": [
+      "+15125550101"
+    ],
+    "location": {
+      "city": "Austin, TX",
+      "region": null,
+      "country": null
+    },
+    "links": null,
+    "headline": null,
+    "years_experience": 7.0,
+    "skills": [
+      {
+        "name": "Python",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Go",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Kubernetes",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "AWS",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Backend",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Docker",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      }
+    ],
+    "experience": [
+      {
+        "company": "Stripe",
+        "title": "Senior Software Engineer",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": null,
+    "overall_confidence": 0.967,
+    "field_confidences": {
+      "emails": 1.0,
+      "experience[0].company": 1.0,
+      "experience[0].title": 1.0,
+      "full_name": 1.0,
+      "location.city": 0.855,
+      "phones": 1.0,
+      "skills": 0.9405,
+      "years_experience": 0.9405
+    },
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "csv",
+        "method": "direct",
+        "value": "alice.johnson@example.com",
+        "raw_span": "alice.johnson@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "emails",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "alice.johnson@example.com",
+        "raw_span": "alice.johnson@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "emails",
+        "source": "notes",
+        "method": "regex",
+        "value": "alice.johnson@example.com",
+        "raw_span": "alice.johnson@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Stripe",
+        "raw_span": "Stripe",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "csv",
+        "method": "direct",
+        "value": "Stripe",
+        "raw_span": "Stripe",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Stripe",
+        "raw_span": "Stripe",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Senior Software Engineer",
+        "raw_span": "Senior Software Engineer",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "csv",
+        "method": "direct",
+        "value": "Senior Software Engineer",
+        "raw_span": "Senior Software Engineer",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Senior Software Engineer",
+        "raw_span": "Senior Software Engineer",
+        "status": "agreeing"
+      },
+      {
+        "field": "full_name",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Alice Johnson",
+        "raw_span": "Alice Johnson",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "csv",
+        "method": "direct",
+        "value": "Alice Johnson",
+        "raw_span": "Alice Johnson",
+        "status": "agreeing"
+      },
+      {
+        "field": "full_name",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Alice Johnson",
+        "raw_span": "Alice Johnson",
+        "status": "agreeing"
+      },
+      {
+        "field": "location.city",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Austin, TX",
+        "raw_span": "Austin, TX",
+        "status": "winner"
+      },
+      {
+        "field": "location.city",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "San Francisco",
+        "raw_span": "San Francisco",
+        "status": "losing"
+      },
+      {
+        "field": "phones",
+        "source": "csv",
+        "method": "direct",
+        "value": "+15125550101",
+        "raw_span": "(512) 555-0101",
+        "status": "aggregated"
+      },
+      {
+        "field": "phones",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "+15125550101",
+        "raw_span": "+15125550101",
+        "status": "aggregated"
+      },
+      {
+        "field": "phones",
+        "source": "notes",
+        "method": "regex",
+        "value": "+15125550101",
+        "raw_span": "(512) 555-0101",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "ats",
+        "method": "alias_map",
+        "value": [
+          "Python",
+          "Go",
+          "Kubernetes",
+          "AWS"
+        ],
+        "raw_span": "['Python', 'Go', 'Kubernetes', 'AWS']",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "AWS",
+        "raw_span": "aws",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Backend",
+        "raw_span": "backend",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Docker",
+        "raw_span": "docker",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Go",
+        "raw_span": "go",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Kubernetes",
+        "raw_span": "kubernetes",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Python",
+        "raw_span": "python",
+        "status": "aggregated"
+      },
+      {
+        "field": "years_experience",
+        "source": "ats",
+        "method": "alias_map",
+        "value": 7,
+        "raw_span": "7",
+        "status": "winner"
+      },
+      {
+        "field": "years_experience",
+        "source": "notes",
+        "method": "regex",
+        "value": 7.0,
+        "raw_span": "7 yrs",
+        "status": "agreeing"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_35d414463d4f",
+    "full_name": "Chris Wanstrath",
+    "emails": null,
+    "phones": null,
+    "location": null,
+    "links": {
+      "github": "https://github.com/defunkt",
+      "portfolio": "http://chriswanstrath.com/"
+    },
+    "headline": "🍔",
+    "years_experience": null,
+    "skills": [
+      {
+        "name": "Ruby",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "JavaScript",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "Emacs Lisp",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "Python",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "C",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "Coffeescript",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "CSS",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "HTML",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "Io",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "Objective-C",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "PHP",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      }
+    ],
+    "experience": null,
+    "education": null,
+    "overall_confidence": 0.765,
+    "field_confidences": {
+      "full_name": 0.765,
+      "headline": 0.765,
+      "links.github": 0.765,
+      "links.portfolio": 0.765,
+      "skills": 0.765
+    },
+    "provenance": [
+      {
+        "field": "full_name",
+        "source": "github",
+        "method": "api",
+        "value": "Chris Wanstrath",
+        "raw_span": "Chris Wanstrath",
+        "status": "winner"
+      },
+      {
+        "field": "headline",
+        "source": "github",
+        "method": "api",
+        "value": "🍔",
+        "raw_span": "🍔",
+        "status": "winner"
+      },
+      {
+        "field": "links.github",
+        "source": "github",
+        "method": "api",
+        "value": "https://github.com/defunkt",
+        "raw_span": "https://github.com/defunkt",
+        "status": "winner"
+      },
+      {
+        "field": "links.portfolio",
+        "source": "github",
+        "method": "api",
+        "value": "http://chriswanstrath.com/",
+        "raw_span": "http://chriswanstrath.com/",
+        "status": "winner"
+      },
+      {
+        "field": "skills",
+        "source": "github",
+        "method": "api",
+        "value": [
+          "Ruby",
+          "JavaScript",
+          "Emacs Lisp",
+          "Python",
+          "C",
+          "Coffeescript",
+          "CSS",
+          "HTML",
+          "Io",
+          "Objective-C",
+          "PHP"
+        ],
+        "raw_span": "{'Ruby': 46, 'JavaScript': 15, 'Io': 1, 'Python': 4, 'Emacs Lisp': 7, 'HTML': 1, 'CoffeeScript': 2, 'CSS': 1, 'PHP': 1, 'C': 3, 'Objective-C': 1}",
+        "status": "aggregated"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_3b15fc4297e2",
+    "full_name": "Diana Chen",
+    "emails": [
+      "diana.chen@example.com"
+    ],
+    "phones": null,
+    "location": {
+      "city": "Seattle, WA",
+      "region": null,
+      "country": null
+    },
+    "links": null,
+    "headline": null,
+    "years_experience": 12.0,
+    "skills": [
+      {
+        "name": "C#",
+        "confidence": 0.855,
+        "sources": [
+          "ats"
+        ]
+      },
+      {
+        "name": "Azure",
+        "confidence": 0.855,
+        "sources": [
+          "ats"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "confidence": 0.855,
+        "sources": [
+          "ats"
+        ]
+      },
+      {
+        "name": "React",
+        "confidence": 0.855,
+        "sources": [
+          "ats"
+        ]
+      }
+    ],
+    "experience": [
+      {
+        "company": "Microsoft",
+        "title": "Principal Software Engineer",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": null,
+    "overall_confidence": 0.8916,
+    "field_confidences": {
+      "emails": 0.9405,
+      "experience[0].company": 0.9405,
+      "experience[0].title": 0.855,
+      "full_name": 0.9405,
+      "location.city": 0.855,
+      "skills": 0.855,
+      "years_experience": 0.855
+    },
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "csv",
+        "method": "direct",
+        "value": "diana.chen@example.com",
+        "raw_span": "diana.chen@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "emails",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "diana.chen@example.com",
+        "raw_span": "diana.chen@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Microsoft",
+        "raw_span": "Microsoft",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "csv",
+        "method": "direct",
+        "value": "Microsoft",
+        "raw_span": "Microsoft",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Principal Software Engineer",
+        "raw_span": "Principal Software Engineer",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "csv",
+        "method": "direct",
+        "value": "Principal Engineer",
+        "raw_span": "Principal Engineer",
+        "status": "losing"
+      },
+      {
+        "field": "full_name",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Diana Chen",
+        "raw_span": "Diana Chen",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "csv",
+        "method": "direct",
+        "value": "Diana Chen",
+        "raw_span": "Diana Chen",
+        "status": "agreeing"
+      },
+      {
+        "field": "location.city",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Seattle, WA",
+        "raw_span": "Seattle, WA",
+        "status": "winner"
+      },
+      {
+        "field": "skills",
+        "source": "ats",
+        "method": "alias_map",
+        "value": [
+          "C#",
+          "Azure",
+          "TypeScript",
+          "React"
+        ],
+        "raw_span": "['C#', 'Azure', 'TypeScript', 'React']",
+        "status": "aggregated"
+      },
+      {
+        "field": "years_experience",
+        "source": "ats",
+        "method": "alias_map",
+        "value": 12,
+        "raw_span": "12",
+        "status": "winner"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_50521f53e239",
+    "full_name": "Bob Smith",
+    "emails": [
+      "bob.smith@@example.com"
+    ],
+    "phones": null,
+    "location": null,
+    "links": null,
+    "headline": null,
+    "years_experience": null,
+    "skills": null,
+    "experience": [
+      {
+        "company": "Google",
+        "title": "Staff Engineer",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": null,
+    "overall_confidence": 0.7,
+    "field_confidences": {
+      "emails": 0.7,
+      "experience[0].company": 0.7,
+      "experience[0].title": 0.7,
+      "full_name": 0.7
+    },
+    "provenance": [
+      {
+        "field": "phones",
+        "source": "csv",
+        "method": "direct",
+        "value": null,
+        "raw_span": "555-0102",
+        "status": "normalization_failed"
+      },
+      {
+        "field": "emails",
+        "source": "csv",
+        "method": "direct",
+        "value": "bob.smith@@example.com",
+        "raw_span": "bob.smith@@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "csv",
+        "method": "direct",
+        "value": "Google",
+        "raw_span": "Google",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "csv",
+        "method": "direct",
+        "value": "Staff Engineer",
+        "raw_span": "Staff Engineer",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "csv",
+        "method": "direct",
+        "value": "Bob Smith",
+        "raw_span": "Bob Smith",
+        "status": "winner"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_7882a26a7fa9",
+    "full_name": "Guido van Rossum",
+    "emails": [
+      "guido@python.org"
+    ],
+    "phones": [
+      "+16505550107"
+    ],
+    "location": {
+      "city": "San Francisco Bay Area",
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "github": "https://github.com/gvanrossum",
+      "portfolio": "https://python.org/~guido/"
+    },
+    "headline": null,
+    "years_experience": null,
+    "skills": [
+      {
+        "name": "Python",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "C",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "HTML",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "C++",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "JavaScript",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "confidence": 0.765,
+        "sources": [
+          "github"
+        ]
+      }
+    ],
+    "experience": [
+      {
+        "company": "Microsoft",
+        "title": "Distinguished Engineer",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": null,
+    "overall_confidence": 0.7603,
+    "field_confidences": {
+      "emails": 0.7,
+      "experience[0].company": 0.8415,
+      "experience[0].title": 0.7,
+      "full_name": 0.8415,
+      "links.github": 0.765,
+      "links.portfolio": 0.765,
+      "location.city": 0.765,
+      "phones": 0.7,
+      "skills": 0.765
+    },
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "csv",
+        "method": "direct",
+        "value": "guido@python.org",
+        "raw_span": "guido@python.org",
+        "status": "aggregated"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "github",
+        "method": "api",
+        "value": "Microsoft",
+        "raw_span": "Microsoft",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "csv",
+        "method": "direct",
+        "value": "Microsoft",
+        "raw_span": "Microsoft",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "csv",
+        "method": "direct",
+        "value": "Distinguished Engineer",
+        "raw_span": "Distinguished Engineer",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "github",
+        "method": "api",
+        "value": "Guido van Rossum",
+        "raw_span": "Guido van Rossum",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "csv",
+        "method": "direct",
+        "value": "Guido van Rossum",
+        "raw_span": "Guido van Rossum",
+        "status": "agreeing"
+      },
+      {
+        "field": "links.github",
+        "source": "github",
+        "method": "api",
+        "value": "https://github.com/gvanrossum",
+        "raw_span": "https://github.com/gvanrossum",
+        "status": "winner"
+      },
+      {
+        "field": "links.portfolio",
+        "source": "github",
+        "method": "api",
+        "value": "https://python.org/~guido/",
+        "raw_span": "https://python.org/~guido/",
+        "status": "winner"
+      },
+      {
+        "field": "location.city",
+        "source": "github",
+        "method": "api",
+        "value": "San Francisco Bay Area",
+        "raw_span": "San Francisco Bay Area",
+        "status": "winner"
+      },
+      {
+        "field": "phones",
+        "source": "csv",
+        "method": "direct",
+        "value": "+16505550107",
+        "raw_span": "(650) 555-0107",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "github",
+        "method": "api",
+        "value": [
+          "Python",
+          "C",
+          "HTML",
+          "C++",
+          "JavaScript",
+          "TypeScript"
+        ],
+        "raw_span": "{'Python': 16, 'C': 4, 'HTML': 2, 'TypeScript': 1, 'C++': 1, 'JavaScript': 1}",
+        "status": "aggregated"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_7f7e638ff2c6",
+    "full_name": "Carlos Rivera",
+    "emails": [
+      "carlos.rivera@example.com"
+    ],
+    "phones": [
+      "+15125550103"
+    ],
+    "location": {
+      "city": "Austin, TX",
+      "region": null,
+      "country": null
+    },
+    "links": null,
+    "headline": null,
+    "years_experience": 10.0,
+    "skills": [
+      {
+        "name": "Python",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "React",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "GraphQL",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "AWS",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Backend",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Frontend",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      }
+    ],
+    "experience": [
+      {
+        "company": "Meta",
+        "title": "Engineering Manager",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": null,
+    "overall_confidence": 0.967,
+    "field_confidences": {
+      "emails": 1.0,
+      "experience[0].company": 1.0,
+      "experience[0].title": 1.0,
+      "full_name": 1.0,
+      "location.city": 0.855,
+      "phones": 1.0,
+      "skills": 0.9405,
+      "years_experience": 0.9405
+    },
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "csv",
+        "method": "direct",
+        "value": "carlos.rivera@example.com",
+        "raw_span": "carlos.rivera@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "emails",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "carlos.rivera@example.com",
+        "raw_span": "carlos.rivera@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "emails",
+        "source": "notes",
+        "method": "regex",
+        "value": "carlos.rivera@example.com",
+        "raw_span": "carlos.rivera@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Meta",
+        "raw_span": "Meta",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "csv",
+        "method": "direct",
+        "value": "Meta",
+        "raw_span": "Meta",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Meta",
+        "raw_span": "Meta",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Engineering Manager",
+        "raw_span": "Engineering Manager",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "csv",
+        "method": "direct",
+        "value": "Engineering Manager",
+        "raw_span": "Engineering Manager",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Engineering Manager",
+        "raw_span": "Engineering Manager",
+        "status": "agreeing"
+      },
+      {
+        "field": "full_name",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Carlos Rivera",
+        "raw_span": "Carlos Rivera",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "csv",
+        "method": "direct",
+        "value": "Carlos Rivera",
+        "raw_span": "Carlos Rivera",
+        "status": "agreeing"
+      },
+      {
+        "field": "full_name",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Carlos Rivera",
+        "raw_span": "Carlos Rivera",
+        "status": "agreeing"
+      },
+      {
+        "field": "location.city",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Austin, TX",
+        "raw_span": "Austin, TX",
+        "status": "winner"
+      },
+      {
+        "field": "location.city",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Austin",
+        "raw_span": "Austin",
+        "status": "losing"
+      },
+      {
+        "field": "phones",
+        "source": "csv",
+        "method": "direct",
+        "value": "+15125550103",
+        "raw_span": "(512) 555-0103",
+        "status": "aggregated"
+      },
+      {
+        "field": "phones",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "+15125550103",
+        "raw_span": "+15125550103",
+        "status": "aggregated"
+      },
+      {
+        "field": "phones",
+        "source": "notes",
+        "method": "regex",
+        "value": "+15125550103",
+        "raw_span": "(512) 555-0103",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "ats",
+        "method": "alias_map",
+        "value": [
+          "Python",
+          "React",
+          "GraphQL",
+          "AWS"
+        ],
+        "raw_span": "['Python', 'React', 'GraphQL', 'AWS']",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "AWS",
+        "raw_span": "aws",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Backend",
+        "raw_span": "backend",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Frontend",
+        "raw_span": "frontend",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "GraphQL",
+        "raw_span": "graphql",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Python",
+        "raw_span": "python",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "React",
+        "raw_span": "react",
+        "status": "aggregated"
+      },
+      {
+        "field": "years_experience",
+        "source": "ats",
+        "method": "alias_map",
+        "value": 10,
+        "raw_span": "10",
+        "status": "winner"
+      },
+      {
+        "field": "years_experience",
+        "source": "notes",
+        "method": "regex",
+        "value": 10.0,
+        "raw_span": "10 years",
+        "status": "agreeing"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_906b7f2b8cc7",
+    "full_name": "Eve Martinez",
+    "emails": [
+      "eve.martinez@example.com"
+    ],
+    "phones": [
+      "+14155550105"
+    ],
+    "location": null,
+    "links": null,
+    "headline": null,
+    "years_experience": null,
+    "skills": null,
+    "experience": [
+      {
+        "company": "Netflix",
+        "title": "Senior Backend Developer",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": null,
+    "overall_confidence": 0.7,
+    "field_confidences": {
+      "emails": 0.7,
+      "experience[0].company": 0.7,
+      "experience[0].title": 0.7,
+      "full_name": 0.7,
+      "phones": 0.7
+    },
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "csv",
+        "method": "direct",
+        "value": "eve.martinez@example.com",
+        "raw_span": "eve.martinez@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "csv",
+        "method": "direct",
+        "value": "Netflix",
+        "raw_span": "Netflix",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "csv",
+        "method": "direct",
+        "value": "Senior Backend Developer",
+        "raw_span": "Senior Backend Developer",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "csv",
+        "method": "direct",
+        "value": "Eve Martinez",
+        "raw_span": "Eve Martinez",
+        "status": "winner"
+      },
+      {
+        "field": "phones",
+        "source": "csv",
+        "method": "direct",
+        "value": "+14155550105",
+        "raw_span": "(415) 555-0105",
+        "status": "aggregated"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_a39860817aaf",
+    "full_name": "Robert Smith",
+    "emails": [
+      "bob.smith@example.com"
+    ],
+    "phones": null,
+    "location": {
+      "city": "San Francisco, CA",
+      "region": null,
+      "country": null
+    },
+    "links": null,
+    "headline": null,
+    "years_experience": 8.0,
+    "skills": [
+      {
+        "name": "Java",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "C++",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "GCP",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Kubernetes",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Backend",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      },
+      {
+        "name": "Python",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "notes"
+        ]
+      }
+    ],
+    "experience": [
+      {
+        "company": "Google",
+        "title": "Staff Software Engineer",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": null,
+    "overall_confidence": 0.8095,
+    "field_confidences": {
+      "emails": 0.9405,
+      "experience[0].company": 0.9405,
+      "experience[0].title": 0.855,
+      "full_name": 0.855,
+      "location.city": 0.855,
+      "skills": 0.9405,
+      "years_experience": 0.28
+    },
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "bob.smith@example.com",
+        "raw_span": "bob.smith@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "emails",
+        "source": "notes",
+        "method": "regex",
+        "value": "bob.smith@example.com",
+        "raw_span": "bob.smith@example.com",
+        "status": "aggregated"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Google",
+        "raw_span": "Google",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Google",
+        "raw_span": "Google",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Staff Software Engineer",
+        "raw_span": "Staff Software Engineer",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Staff Engineer in San Francisco",
+        "raw_span": "Staff Engineer in San Francisco",
+        "status": "losing"
+      },
+      {
+        "field": "full_name",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Robert Smith",
+        "raw_span": "Robert Smith",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Bob Smith",
+        "raw_span": "Bob Smith",
+        "status": "losing"
+      },
+      {
+        "field": "location.city",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "San Francisco, CA",
+        "raw_span": "San Francisco, CA",
+        "status": "winner"
+      },
+      {
+        "field": "location.city",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "San Francisco",
+        "raw_span": "San Francisco",
+        "status": "losing"
+      },
+      {
+        "field": "skills",
+        "source": "ats",
+        "method": "alias_map",
+        "value": [
+          "Java",
+          "C++",
+          "GCP",
+          "Kubernetes"
+        ],
+        "raw_span": "['Java', 'C++', 'GCP', 'Kubernetes']",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Backend",
+        "raw_span": "backend",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Java",
+        "raw_span": "java",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Kubernetes",
+        "raw_span": "kubernetes",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Python",
+        "raw_span": "python",
+        "status": "aggregated"
+      },
+      {
+        "field": "years_experience",
+        "source": "notes",
+        "method": "regex",
+        "value": 8.0,
+        "raw_span": "8+ yrs",
+        "status": "winner"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_b75e61f553f5",
+    "full_name": "Linus Torvalds",
+    "emails": [
+      "torvalds@linux-foundation.org"
+    ],
+    "phones": [
+      "+15035550106"
+    ],
+    "location": {
+      "city": "Portland, OR",
+      "region": null,
+      "country": null
+    },
+    "links": {
+      "github": "https://github.com/torvalds"
+    },
+    "headline": null,
+    "years_experience": 30.0,
+    "skills": [
+      {
+        "name": "C",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "github"
+        ]
+      },
+      {
+        "name": "Linux",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "github"
+        ]
+      },
+      {
+        "name": "Git",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "github"
+        ]
+      },
+      {
+        "name": "Kernel Development",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "github"
+        ]
+      },
+      {
+        "name": "C++",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "github"
+        ]
+      },
+      {
+        "name": "Openscad",
+        "confidence": 0.9405,
+        "sources": [
+          "ats",
+          "github"
+        ]
+      }
+    ],
+    "experience": [
+      {
+        "company": "Linux Foundation",
+        "title": "Fellow",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": null,
+    "overall_confidence": 0.9219,
+    "field_confidences": {
+      "emails": 1.0,
+      "experience[0].company": 1.0,
+      "experience[0].title": 0.9405,
+      "full_name": 1.0,
+      "links.github": 0.765,
+      "location.city": 0.9405,
+      "phones": 0.77,
+      "skills": 0.9405,
+      "years_experience": 0.9405
+    },
+    "provenance": [
+      {
+        "field": "emails",
+        "source": "csv",
+        "method": "direct",
+        "value": "torvalds@linux-foundation.org",
+        "raw_span": "torvalds@linux-foundation.org",
+        "status": "aggregated"
+      },
+      {
+        "field": "emails",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "torvalds@linux-foundation.org",
+        "raw_span": "torvalds@linux-foundation.org",
+        "status": "aggregated"
+      },
+      {
+        "field": "emails",
+        "source": "notes",
+        "method": "regex",
+        "value": "torvalds@linux-foundation.org",
+        "raw_span": "torvalds@linux-foundation.org",
+        "status": "aggregated"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Linux Foundation",
+        "raw_span": "Linux Foundation",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "github",
+        "method": "api",
+        "value": "Linux Foundation",
+        "raw_span": "Linux Foundation",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].company",
+        "source": "csv",
+        "method": "direct",
+        "value": "Linux Foundation",
+        "raw_span": "Linux Foundation",
+        "status": "agreeing"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Fellow",
+        "raw_span": "Fellow",
+        "status": "winner"
+      },
+      {
+        "field": "experience[0].title",
+        "source": "csv",
+        "method": "direct",
+        "value": "Fellow",
+        "raw_span": "Fellow",
+        "status": "agreeing"
+      },
+      {
+        "field": "full_name",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Linus Torvalds",
+        "raw_span": "Linus Torvalds",
+        "status": "winner"
+      },
+      {
+        "field": "full_name",
+        "source": "github",
+        "method": "api",
+        "value": "Linus Torvalds",
+        "raw_span": "Linus Torvalds",
+        "status": "agreeing"
+      },
+      {
+        "field": "full_name",
+        "source": "csv",
+        "method": "direct",
+        "value": "Linus Torvalds",
+        "raw_span": "Linus Torvalds",
+        "status": "agreeing"
+      },
+      {
+        "field": "full_name",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Linus Torvalds",
+        "raw_span": "Linus Torvalds",
+        "status": "agreeing"
+      },
+      {
+        "field": "links.github",
+        "source": "github",
+        "method": "api",
+        "value": "https://github.com/torvalds",
+        "raw_span": "https://github.com/torvalds",
+        "status": "winner"
+      },
+      {
+        "field": "location.city",
+        "source": "ats",
+        "method": "alias_map",
+        "value": "Portland, OR",
+        "raw_span": "Portland, OR",
+        "status": "winner"
+      },
+      {
+        "field": "location.city",
+        "source": "github",
+        "method": "api",
+        "value": "Portland, OR",
+        "raw_span": "Portland, OR",
+        "status": "agreeing"
+      },
+      {
+        "field": "location.city",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "Portland",
+        "raw_span": "Portland",
+        "status": "losing"
+      },
+      {
+        "field": "phones",
+        "source": "csv",
+        "method": "direct",
+        "value": "+15035550106",
+        "raw_span": "(503) 555-0106",
+        "status": "aggregated"
+      },
+      {
+        "field": "phones",
+        "source": "notes",
+        "method": "regex",
+        "value": "+15035550106",
+        "raw_span": "(503) 555-0106",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "ats",
+        "method": "alias_map",
+        "value": [
+          "C",
+          "Linux",
+          "Git",
+          "Kernel Development"
+        ],
+        "raw_span": "['C', 'Linux', 'Git', 'Kernel Development']",
+        "status": "aggregated"
+      },
+      {
+        "field": "skills",
+        "source": "github",
+        "method": "api",
+        "value": [
+          "C",
+          "C++",
+          "Openscad"
+        ],
+        "raw_span": "{'C': 10, 'C++': 1, 'OpenSCAD': 1}",
+        "status": "aggregated"
+      },
+      {
+        "field": "years_experience",
+        "source": "ats",
+        "method": "alias_map",
+        "value": 30,
+        "raw_span": "30",
+        "status": "winner"
+      },
+      {
+        "field": "years_experience",
+        "source": "notes",
+        "method": "regex",
+        "value": 30.0,
+        "raw_span": "30+ years",
+        "status": "agreeing"
+      }
+    ]
+  },
+  {
+    "candidate_id": "cand_dbb734de5b12",
+    "full_name": "Unknown",
+    "emails": null,
+    "phones": null,
+    "location": {
+      "city": "La",
+      "region": null,
+      "country": null
+    },
+    "links": null,
+    "headline": null,
+    "years_experience": null,
+    "skills": null,
+    "experience": null,
+    "education": null,
+    "overall_confidence": 0.2,
+    "field_confidences": {
+      "location.city": 0.2
+    },
+    "provenance": [
+      {
+        "field": "location.city",
+        "source": "notes",
+        "method": "heuristic",
+        "value": "La",
+        "raw_span": "La",
+        "status": "winner"
+      }
+    ]
+  }
+];
+        const decisions = [
+  {
+    "candidate_id": "cand_1079ed8c61d3",
+    "overall_confidence": 0.967,
+    "fields": {
+      "emails": {
+        "field": "emails",
+        "is_array_field": true,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "emails",
+            "source": "csv",
+            "method": "direct",
+            "value": "alice.johnson@example.com",
+            "raw_span": "alice.johnson@example.com",
+            "status": "aggregated"
+          },
+          {
+            "field": "emails",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "alice.johnson@example.com",
+            "raw_span": "alice.johnson@example.com",
+            "status": "aggregated"
+          },
+          {
+            "field": "emails",
+            "source": "notes",
+            "method": "regex",
+            "value": "alice.johnson@example.com",
+            "raw_span": "alice.johnson@example.com",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "alice.johnson@example.com"
+          ],
+          "source_count": 3,
+          "reason": "Union + deduplicated array values from 3 source observations."
+        }
+      },
+      "experience[0].company": {
+        "field": "experience[0].company",
+        "is_array_field": false,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "experience[0].company",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Stripe",
+            "raw_span": "Stripe",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "csv",
+            "method": "direct",
+            "value": "Stripe",
+            "raw_span": "Stripe",
+            "status": "agreeing"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Stripe",
+            "raw_span": "Stripe",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 2,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 2 agreeing source(s): csv, notes."
+        },
+        "conflict_detected": false
+      },
+      "experience[0].title": {
+        "field": "experience[0].title",
+        "is_array_field": false,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "experience[0].title",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Senior Software Engineer",
+            "raw_span": "Senior Software Engineer",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].title",
+            "source": "csv",
+            "method": "direct",
+            "value": "Senior Software Engineer",
+            "raw_span": "Senior Software Engineer",
+            "status": "agreeing"
+          },
+          {
+            "field": "experience[0].title",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Senior Software Engineer",
+            "raw_span": "Senior Software Engineer",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 2,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 2 agreeing source(s): csv, notes."
+        },
+        "conflict_detected": false
+      },
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Alice Johnson",
+            "raw_span": "Alice Johnson",
+            "status": "winner"
+          },
+          {
+            "field": "full_name",
+            "source": "csv",
+            "method": "direct",
+            "value": "Alice Johnson",
+            "raw_span": "Alice Johnson",
+            "status": "agreeing"
+          },
+          {
+            "field": "full_name",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Alice Johnson",
+            "raw_span": "Alice Johnson",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Alice Johnson",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 2,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 2 agreeing source(s): csv, notes."
+        },
+        "conflict_detected": false
+      },
+      "location.city": {
+        "field": "location.city",
+        "is_array_field": false,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "location.city",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Austin, TX",
+            "raw_span": "Austin, TX",
+            "status": "winner"
+          },
+          {
+            "field": "location.city",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "San Francisco",
+            "raw_span": "San Francisco",
+            "status": "losing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Austin, TX",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 0,
+          "losing_count": 1,
+          "reason": "Winner: ats (method=alias_map). 1 losing source(s): notes (rejected values: 'San Francisco')."
+        },
+        "conflict_detected": true
+      },
+      "phones": {
+        "field": "phones",
+        "is_array_field": true,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "phones",
+            "source": "csv",
+            "method": "direct",
+            "value": "+15125550101",
+            "raw_span": "(512) 555-0101",
+            "status": "aggregated"
+          },
+          {
+            "field": "phones",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "+15125550101",
+            "raw_span": "+15125550101",
+            "status": "aggregated"
+          },
+          {
+            "field": "phones",
+            "source": "notes",
+            "method": "regex",
+            "value": "+15125550101",
+            "raw_span": "(512) 555-0101",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "+15125550101"
+          ],
+          "source_count": 3,
+          "reason": "Union + deduplicated array values from 3 source observations."
+        }
+      },
+      "skills": {
+        "field": "skills",
+        "is_array_field": true,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "skills",
+            "source": "ats",
+            "method": "alias_map",
+            "value": [
+              "Python",
+              "Go",
+              "Kubernetes",
+              "AWS"
+            ],
+            "raw_span": "['Python', 'Go', 'Kubernetes', 'AWS']",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "AWS",
+            "raw_span": "aws",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Backend",
+            "raw_span": "backend",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Docker",
+            "raw_span": "docker",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Go",
+            "raw_span": "go",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Kubernetes",
+            "raw_span": "kubernetes",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Python",
+            "raw_span": "python",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "Python",
+            "Go",
+            "Kubernetes",
+            "AWS",
+            "Backend",
+            "Docker"
+          ],
+          "source_count": 7,
+          "reason": "Union + deduplicated array values from 7 source observations."
+        }
+      },
+      "years_experience": {
+        "field": "years_experience",
+        "is_array_field": false,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "years_experience",
+            "source": "ats",
+            "method": "alias_map",
+            "value": 7,
+            "raw_span": "7",
+            "status": "winner"
+          },
+          {
+            "field": "years_experience",
+            "source": "notes",
+            "method": "regex",
+            "value": 7.0,
+            "raw_span": "7 yrs",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": 7.0,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 1 agreeing source(s): notes."
+        },
+        "conflict_detected": false
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_35d414463d4f",
+    "overall_confidence": 0.765,
+    "fields": {
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "github",
+            "method": "api",
+            "value": "Chris Wanstrath",
+            "raw_span": "Chris Wanstrath",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Chris Wanstrath",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api)."
+        },
+        "conflict_detected": false
+      },
+      "headline": {
+        "field": "headline",
+        "is_array_field": false,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "headline",
+            "source": "github",
+            "method": "api",
+            "value": "🍔",
+            "raw_span": "🍔",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "🍔",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api)."
+        },
+        "conflict_detected": false
+      },
+      "links.github": {
+        "field": "links.github",
+        "is_array_field": false,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "links.github",
+            "source": "github",
+            "method": "api",
+            "value": "https://github.com/defunkt",
+            "raw_span": "https://github.com/defunkt",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "https://github.com/defunkt",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api)."
+        },
+        "conflict_detected": false
+      },
+      "links.portfolio": {
+        "field": "links.portfolio",
+        "is_array_field": false,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "links.portfolio",
+            "source": "github",
+            "method": "api",
+            "value": "http://chriswanstrath.com/",
+            "raw_span": "http://chriswanstrath.com/",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "http://chriswanstrath.com/",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api)."
+        },
+        "conflict_detected": false
+      },
+      "skills": {
+        "field": "skills",
+        "is_array_field": true,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "skills",
+            "source": "github",
+            "method": "api",
+            "value": [
+              "Ruby",
+              "JavaScript",
+              "Emacs Lisp",
+              "Python",
+              "C",
+              "Coffeescript",
+              "CSS",
+              "HTML",
+              "Io",
+              "Objective-C",
+              "PHP"
+            ],
+            "raw_span": "{'Ruby': 46, 'JavaScript': 15, 'Io': 1, 'Python': 4, 'Emacs Lisp': 7, 'HTML': 1, 'CoffeeScript': 2, 'CSS': 1, 'PHP': 1, 'C': 3, 'Objective-C': 1}",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "Ruby",
+            "JavaScript",
+            "Emacs Lisp",
+            "Python",
+            "C",
+            "Coffeescript",
+            "CSS",
+            "HTML",
+            "Io",
+            "Objective-C",
+            "PHP"
+          ],
+          "source_count": 1,
+          "reason": "Union + deduplicated array values from 1 source observations."
+        }
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_3b15fc4297e2",
+    "overall_confidence": 0.8916,
+    "fields": {
+      "emails": {
+        "field": "emails",
+        "is_array_field": true,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "emails",
+            "source": "csv",
+            "method": "direct",
+            "value": "diana.chen@example.com",
+            "raw_span": "diana.chen@example.com",
+            "status": "aggregated"
+          },
+          {
+            "field": "emails",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "diana.chen@example.com",
+            "raw_span": "diana.chen@example.com",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "diana.chen@example.com"
+          ],
+          "source_count": 2,
+          "reason": "Union + deduplicated array values from 2 source observations."
+        }
+      },
+      "experience[0].company": {
+        "field": "experience[0].company",
+        "is_array_field": false,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "experience[0].company",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Microsoft",
+            "raw_span": "Microsoft",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "csv",
+            "method": "direct",
+            "value": "Microsoft",
+            "raw_span": "Microsoft",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 1 agreeing source(s): csv."
+        },
+        "conflict_detected": false
+      },
+      "experience[0].title": {
+        "field": "experience[0].title",
+        "is_array_field": false,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "experience[0].title",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Principal Software Engineer",
+            "raw_span": "Principal Software Engineer",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].title",
+            "source": "csv",
+            "method": "direct",
+            "value": "Principal Engineer",
+            "raw_span": "Principal Engineer",
+            "status": "losing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 0,
+          "losing_count": 1,
+          "reason": "Winner: ats (method=alias_map). 1 losing source(s): csv (rejected values: 'Principal Engineer')."
+        },
+        "conflict_detected": true
+      },
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Diana Chen",
+            "raw_span": "Diana Chen",
+            "status": "winner"
+          },
+          {
+            "field": "full_name",
+            "source": "csv",
+            "method": "direct",
+            "value": "Diana Chen",
+            "raw_span": "Diana Chen",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Diana Chen",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 1 agreeing source(s): csv."
+        },
+        "conflict_detected": false
+      },
+      "location.city": {
+        "field": "location.city",
+        "is_array_field": false,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "location.city",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Seattle, WA",
+            "raw_span": "Seattle, WA",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Seattle, WA",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map)."
+        },
+        "conflict_detected": false
+      },
+      "skills": {
+        "field": "skills",
+        "is_array_field": true,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "skills",
+            "source": "ats",
+            "method": "alias_map",
+            "value": [
+              "C#",
+              "Azure",
+              "TypeScript",
+              "React"
+            ],
+            "raw_span": "['C#', 'Azure', 'TypeScript', 'React']",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "C#",
+            "Azure",
+            "TypeScript",
+            "React"
+          ],
+          "source_count": 1,
+          "reason": "Union + deduplicated array values from 1 source observations."
+        }
+      },
+      "years_experience": {
+        "field": "years_experience",
+        "is_array_field": false,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "years_experience",
+            "source": "ats",
+            "method": "alias_map",
+            "value": 12,
+            "raw_span": "12",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": 12.0,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map)."
+        },
+        "conflict_detected": false
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_50521f53e239",
+    "overall_confidence": 0.7,
+    "fields": {
+      "emails": {
+        "field": "emails",
+        "is_array_field": true,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "emails",
+            "source": "csv",
+            "method": "direct",
+            "value": "bob.smith@@example.com",
+            "raw_span": "bob.smith@@example.com",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "bob.smith@@example.com"
+          ],
+          "source_count": 1,
+          "reason": "Union + deduplicated array values from 1 source observations."
+        }
+      },
+      "experience[0].company": {
+        "field": "experience[0].company",
+        "is_array_field": false,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "experience[0].company",
+            "source": "csv",
+            "method": "direct",
+            "value": "Google",
+            "raw_span": "Google",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "csv",
+          "method": "direct",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: csv (method=direct)."
+        },
+        "conflict_detected": false
+      },
+      "experience[0].title": {
+        "field": "experience[0].title",
+        "is_array_field": false,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "experience[0].title",
+            "source": "csv",
+            "method": "direct",
+            "value": "Staff Engineer",
+            "raw_span": "Staff Engineer",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "csv",
+          "method": "direct",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: csv (method=direct)."
+        },
+        "conflict_detected": false
+      },
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "csv",
+            "method": "direct",
+            "value": "Bob Smith",
+            "raw_span": "Bob Smith",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Bob Smith",
+          "source": "csv",
+          "method": "direct",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: csv (method=direct)."
+        },
+        "conflict_detected": false
+      },
+      "phones": {
+        "field": "phones",
+        "is_array_field": true,
+        "final_confidence": 0.0,
+        "candidates_considered": [
+          {
+            "field": "phones",
+            "source": "csv",
+            "method": "direct",
+            "value": null,
+            "raw_span": "555-0102",
+            "status": "normalization_failed"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [],
+          "source_count": 0,
+          "reason": "Union + deduplicated array values from 0 source observations."
+        },
+        "normalization_failures": [
+          {
+            "source": "csv",
+            "method": "direct",
+            "value": null,
+            "raw_span": "555-0102",
+            "status": "normalization_failed"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_7882a26a7fa9",
+    "overall_confidence": 0.7603,
+    "fields": {
+      "emails": {
+        "field": "emails",
+        "is_array_field": true,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "emails",
+            "source": "csv",
+            "method": "direct",
+            "value": "guido@python.org",
+            "raw_span": "guido@python.org",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "guido@python.org"
+          ],
+          "source_count": 1,
+          "reason": "Union + deduplicated array values from 1 source observations."
+        }
+      },
+      "experience[0].company": {
+        "field": "experience[0].company",
+        "is_array_field": false,
+        "final_confidence": 0.8415,
+        "candidates_considered": [
+          {
+            "field": "experience[0].company",
+            "source": "github",
+            "method": "api",
+            "value": "Microsoft",
+            "raw_span": "Microsoft",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "csv",
+            "method": "direct",
+            "value": "Microsoft",
+            "raw_span": "Microsoft",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api). 1 agreeing source(s): csv."
+        },
+        "conflict_detected": false
+      },
+      "experience[0].title": {
+        "field": "experience[0].title",
+        "is_array_field": false,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "experience[0].title",
+            "source": "csv",
+            "method": "direct",
+            "value": "Distinguished Engineer",
+            "raw_span": "Distinguished Engineer",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "csv",
+          "method": "direct",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: csv (method=direct)."
+        },
+        "conflict_detected": false
+      },
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 0.8415,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "github",
+            "method": "api",
+            "value": "Guido van Rossum",
+            "raw_span": "Guido van Rossum",
+            "status": "winner"
+          },
+          {
+            "field": "full_name",
+            "source": "csv",
+            "method": "direct",
+            "value": "Guido van Rossum",
+            "raw_span": "Guido van Rossum",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Guido van Rossum",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api). 1 agreeing source(s): csv."
+        },
+        "conflict_detected": false
+      },
+      "links.github": {
+        "field": "links.github",
+        "is_array_field": false,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "links.github",
+            "source": "github",
+            "method": "api",
+            "value": "https://github.com/gvanrossum",
+            "raw_span": "https://github.com/gvanrossum",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "https://github.com/gvanrossum",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api)."
+        },
+        "conflict_detected": false
+      },
+      "links.portfolio": {
+        "field": "links.portfolio",
+        "is_array_field": false,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "links.portfolio",
+            "source": "github",
+            "method": "api",
+            "value": "https://python.org/~guido/",
+            "raw_span": "https://python.org/~guido/",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "https://python.org/~guido/",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api)."
+        },
+        "conflict_detected": false
+      },
+      "location.city": {
+        "field": "location.city",
+        "is_array_field": false,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "location.city",
+            "source": "github",
+            "method": "api",
+            "value": "San Francisco Bay Area",
+            "raw_span": "San Francisco Bay Area",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "San Francisco Bay Area",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api)."
+        },
+        "conflict_detected": false
+      },
+      "phones": {
+        "field": "phones",
+        "is_array_field": true,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "phones",
+            "source": "csv",
+            "method": "direct",
+            "value": "+16505550107",
+            "raw_span": "(650) 555-0107",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "+16505550107"
+          ],
+          "source_count": 1,
+          "reason": "Union + deduplicated array values from 1 source observations."
+        }
+      },
+      "skills": {
+        "field": "skills",
+        "is_array_field": true,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "skills",
+            "source": "github",
+            "method": "api",
+            "value": [
+              "Python",
+              "C",
+              "HTML",
+              "C++",
+              "JavaScript",
+              "TypeScript"
+            ],
+            "raw_span": "{'Python': 16, 'C': 4, 'HTML': 2, 'TypeScript': 1, 'C++': 1, 'JavaScript': 1}",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "Python",
+            "C",
+            "HTML",
+            "C++",
+            "JavaScript",
+            "TypeScript"
+          ],
+          "source_count": 1,
+          "reason": "Union + deduplicated array values from 1 source observations."
+        }
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_7f7e638ff2c6",
+    "overall_confidence": 0.967,
+    "fields": {
+      "emails": {
+        "field": "emails",
+        "is_array_field": true,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "emails",
+            "source": "csv",
+            "method": "direct",
+            "value": "carlos.rivera@example.com",
+            "raw_span": "carlos.rivera@example.com",
+            "status": "aggregated"
+          },
+          {
+            "field": "emails",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "carlos.rivera@example.com",
+            "raw_span": "carlos.rivera@example.com",
+            "status": "aggregated"
+          },
+          {
+            "field": "emails",
+            "source": "notes",
+            "method": "regex",
+            "value": "carlos.rivera@example.com",
+            "raw_span": "carlos.rivera@example.com",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "carlos.rivera@example.com"
+          ],
+          "source_count": 3,
+          "reason": "Union + deduplicated array values from 3 source observations."
+        }
+      },
+      "experience[0].company": {
+        "field": "experience[0].company",
+        "is_array_field": false,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "experience[0].company",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Meta",
+            "raw_span": "Meta",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "csv",
+            "method": "direct",
+            "value": "Meta",
+            "raw_span": "Meta",
+            "status": "agreeing"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Meta",
+            "raw_span": "Meta",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 2,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 2 agreeing source(s): csv, notes."
+        },
+        "conflict_detected": false
+      },
+      "experience[0].title": {
+        "field": "experience[0].title",
+        "is_array_field": false,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "experience[0].title",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Engineering Manager",
+            "raw_span": "Engineering Manager",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].title",
+            "source": "csv",
+            "method": "direct",
+            "value": "Engineering Manager",
+            "raw_span": "Engineering Manager",
+            "status": "agreeing"
+          },
+          {
+            "field": "experience[0].title",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Engineering Manager",
+            "raw_span": "Engineering Manager",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 2,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 2 agreeing source(s): csv, notes."
+        },
+        "conflict_detected": false
+      },
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Carlos Rivera",
+            "raw_span": "Carlos Rivera",
+            "status": "winner"
+          },
+          {
+            "field": "full_name",
+            "source": "csv",
+            "method": "direct",
+            "value": "Carlos Rivera",
+            "raw_span": "Carlos Rivera",
+            "status": "agreeing"
+          },
+          {
+            "field": "full_name",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Carlos Rivera",
+            "raw_span": "Carlos Rivera",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Carlos Rivera",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 2,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 2 agreeing source(s): csv, notes."
+        },
+        "conflict_detected": false
+      },
+      "location.city": {
+        "field": "location.city",
+        "is_array_field": false,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "location.city",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Austin, TX",
+            "raw_span": "Austin, TX",
+            "status": "winner"
+          },
+          {
+            "field": "location.city",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Austin",
+            "raw_span": "Austin",
+            "status": "losing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Austin, TX",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 0,
+          "losing_count": 1,
+          "reason": "Winner: ats (method=alias_map). 1 losing source(s): notes (rejected values: 'Austin')."
+        },
+        "conflict_detected": true
+      },
+      "phones": {
+        "field": "phones",
+        "is_array_field": true,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "phones",
+            "source": "csv",
+            "method": "direct",
+            "value": "+15125550103",
+            "raw_span": "(512) 555-0103",
+            "status": "aggregated"
+          },
+          {
+            "field": "phones",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "+15125550103",
+            "raw_span": "+15125550103",
+            "status": "aggregated"
+          },
+          {
+            "field": "phones",
+            "source": "notes",
+            "method": "regex",
+            "value": "+15125550103",
+            "raw_span": "(512) 555-0103",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "+15125550103"
+          ],
+          "source_count": 3,
+          "reason": "Union + deduplicated array values from 3 source observations."
+        }
+      },
+      "skills": {
+        "field": "skills",
+        "is_array_field": true,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "skills",
+            "source": "ats",
+            "method": "alias_map",
+            "value": [
+              "Python",
+              "React",
+              "GraphQL",
+              "AWS"
+            ],
+            "raw_span": "['Python', 'React', 'GraphQL', 'AWS']",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "AWS",
+            "raw_span": "aws",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Backend",
+            "raw_span": "backend",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Frontend",
+            "raw_span": "frontend",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "GraphQL",
+            "raw_span": "graphql",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Python",
+            "raw_span": "python",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "React",
+            "raw_span": "react",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "Python",
+            "React",
+            "GraphQL",
+            "AWS",
+            "Backend",
+            "Frontend"
+          ],
+          "source_count": 7,
+          "reason": "Union + deduplicated array values from 7 source observations."
+        }
+      },
+      "years_experience": {
+        "field": "years_experience",
+        "is_array_field": false,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "years_experience",
+            "source": "ats",
+            "method": "alias_map",
+            "value": 10,
+            "raw_span": "10",
+            "status": "winner"
+          },
+          {
+            "field": "years_experience",
+            "source": "notes",
+            "method": "regex",
+            "value": 10.0,
+            "raw_span": "10 years",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": 10.0,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 1 agreeing source(s): notes."
+        },
+        "conflict_detected": false
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_906b7f2b8cc7",
+    "overall_confidence": 0.7,
+    "fields": {
+      "emails": {
+        "field": "emails",
+        "is_array_field": true,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "emails",
+            "source": "csv",
+            "method": "direct",
+            "value": "eve.martinez@example.com",
+            "raw_span": "eve.martinez@example.com",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "eve.martinez@example.com"
+          ],
+          "source_count": 1,
+          "reason": "Union + deduplicated array values from 1 source observations."
+        }
+      },
+      "experience[0].company": {
+        "field": "experience[0].company",
+        "is_array_field": false,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "experience[0].company",
+            "source": "csv",
+            "method": "direct",
+            "value": "Netflix",
+            "raw_span": "Netflix",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "csv",
+          "method": "direct",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: csv (method=direct)."
+        },
+        "conflict_detected": false
+      },
+      "experience[0].title": {
+        "field": "experience[0].title",
+        "is_array_field": false,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "experience[0].title",
+            "source": "csv",
+            "method": "direct",
+            "value": "Senior Backend Developer",
+            "raw_span": "Senior Backend Developer",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "csv",
+          "method": "direct",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: csv (method=direct)."
+        },
+        "conflict_detected": false
+      },
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "csv",
+            "method": "direct",
+            "value": "Eve Martinez",
+            "raw_span": "Eve Martinez",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Eve Martinez",
+          "source": "csv",
+          "method": "direct",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: csv (method=direct)."
+        },
+        "conflict_detected": false
+      },
+      "phones": {
+        "field": "phones",
+        "is_array_field": true,
+        "final_confidence": 0.7,
+        "candidates_considered": [
+          {
+            "field": "phones",
+            "source": "csv",
+            "method": "direct",
+            "value": "+14155550105",
+            "raw_span": "(415) 555-0105",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "+14155550105"
+          ],
+          "source_count": 1,
+          "reason": "Union + deduplicated array values from 1 source observations."
+        }
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_a39860817aaf",
+    "overall_confidence": 0.8095,
+    "fields": {
+      "emails": {
+        "field": "emails",
+        "is_array_field": true,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "emails",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "bob.smith@example.com",
+            "raw_span": "bob.smith@example.com",
+            "status": "aggregated"
+          },
+          {
+            "field": "emails",
+            "source": "notes",
+            "method": "regex",
+            "value": "bob.smith@example.com",
+            "raw_span": "bob.smith@example.com",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "bob.smith@example.com"
+          ],
+          "source_count": 2,
+          "reason": "Union + deduplicated array values from 2 source observations."
+        }
+      },
+      "experience[0].company": {
+        "field": "experience[0].company",
+        "is_array_field": false,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "experience[0].company",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Google",
+            "raw_span": "Google",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Google",
+            "raw_span": "Google",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 1 agreeing source(s): notes."
+        },
+        "conflict_detected": false
+      },
+      "experience[0].title": {
+        "field": "experience[0].title",
+        "is_array_field": false,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "experience[0].title",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Staff Software Engineer",
+            "raw_span": "Staff Software Engineer",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].title",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Staff Engineer in San Francisco",
+            "raw_span": "Staff Engineer in San Francisco",
+            "status": "losing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 0,
+          "losing_count": 1,
+          "reason": "Winner: ats (method=alias_map). 1 losing source(s): notes (rejected values: 'Staff Engineer in San Francisco')."
+        },
+        "conflict_detected": true
+      },
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Robert Smith",
+            "raw_span": "Robert Smith",
+            "status": "winner"
+          },
+          {
+            "field": "full_name",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Bob Smith",
+            "raw_span": "Bob Smith",
+            "status": "losing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Robert Smith",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 0,
+          "losing_count": 1,
+          "reason": "Winner: ats (method=alias_map). 1 losing source(s): notes (rejected values: 'Bob Smith')."
+        },
+        "conflict_detected": true
+      },
+      "location.city": {
+        "field": "location.city",
+        "is_array_field": false,
+        "final_confidence": 0.855,
+        "candidates_considered": [
+          {
+            "field": "location.city",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "San Francisco, CA",
+            "raw_span": "San Francisco, CA",
+            "status": "winner"
+          },
+          {
+            "field": "location.city",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "San Francisco",
+            "raw_span": "San Francisco",
+            "status": "losing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "San Francisco, CA",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 0,
+          "losing_count": 1,
+          "reason": "Winner: ats (method=alias_map). 1 losing source(s): notes (rejected values: 'San Francisco')."
+        },
+        "conflict_detected": true
+      },
+      "skills": {
+        "field": "skills",
+        "is_array_field": true,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "skills",
+            "source": "ats",
+            "method": "alias_map",
+            "value": [
+              "Java",
+              "C++",
+              "GCP",
+              "Kubernetes"
+            ],
+            "raw_span": "['Java', 'C++', 'GCP', 'Kubernetes']",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Backend",
+            "raw_span": "backend",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Java",
+            "raw_span": "java",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Kubernetes",
+            "raw_span": "kubernetes",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Python",
+            "raw_span": "python",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "Java",
+            "C++",
+            "GCP",
+            "Kubernetes",
+            "Backend",
+            "Python"
+          ],
+          "source_count": 5,
+          "reason": "Union + deduplicated array values from 5 source observations."
+        }
+      },
+      "years_experience": {
+        "field": "years_experience",
+        "is_array_field": false,
+        "final_confidence": 0.28,
+        "candidates_considered": [
+          {
+            "field": "years_experience",
+            "source": "notes",
+            "method": "regex",
+            "value": 8.0,
+            "raw_span": "8+ yrs",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": 8.0,
+          "source": "notes",
+          "method": "regex",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: notes (method=regex)."
+        },
+        "conflict_detected": false
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_b75e61f553f5",
+    "overall_confidence": 0.9219,
+    "fields": {
+      "emails": {
+        "field": "emails",
+        "is_array_field": true,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "emails",
+            "source": "csv",
+            "method": "direct",
+            "value": "torvalds@linux-foundation.org",
+            "raw_span": "torvalds@linux-foundation.org",
+            "status": "aggregated"
+          },
+          {
+            "field": "emails",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "torvalds@linux-foundation.org",
+            "raw_span": "torvalds@linux-foundation.org",
+            "status": "aggregated"
+          },
+          {
+            "field": "emails",
+            "source": "notes",
+            "method": "regex",
+            "value": "torvalds@linux-foundation.org",
+            "raw_span": "torvalds@linux-foundation.org",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "torvalds@linux-foundation.org"
+          ],
+          "source_count": 3,
+          "reason": "Union + deduplicated array values from 3 source observations."
+        }
+      },
+      "experience[0].company": {
+        "field": "experience[0].company",
+        "is_array_field": false,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "experience[0].company",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Linux Foundation",
+            "raw_span": "Linux Foundation",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "github",
+            "method": "api",
+            "value": "Linux Foundation",
+            "raw_span": "Linux Foundation",
+            "status": "agreeing"
+          },
+          {
+            "field": "experience[0].company",
+            "source": "csv",
+            "method": "direct",
+            "value": "Linux Foundation",
+            "raw_span": "Linux Foundation",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 2,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 2 agreeing source(s): github, csv."
+        },
+        "conflict_detected": false
+      },
+      "experience[0].title": {
+        "field": "experience[0].title",
+        "is_array_field": false,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "experience[0].title",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Fellow",
+            "raw_span": "Fellow",
+            "status": "winner"
+          },
+          {
+            "field": "experience[0].title",
+            "source": "csv",
+            "method": "direct",
+            "value": "Fellow",
+            "raw_span": "Fellow",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": null,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 1 agreeing source(s): csv."
+        },
+        "conflict_detected": false
+      },
+      "full_name": {
+        "field": "full_name",
+        "is_array_field": false,
+        "final_confidence": 1.0,
+        "candidates_considered": [
+          {
+            "field": "full_name",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Linus Torvalds",
+            "raw_span": "Linus Torvalds",
+            "status": "winner"
+          },
+          {
+            "field": "full_name",
+            "source": "github",
+            "method": "api",
+            "value": "Linus Torvalds",
+            "raw_span": "Linus Torvalds",
+            "status": "agreeing"
+          },
+          {
+            "field": "full_name",
+            "source": "csv",
+            "method": "direct",
+            "value": "Linus Torvalds",
+            "raw_span": "Linus Torvalds",
+            "status": "agreeing"
+          },
+          {
+            "field": "full_name",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Linus Torvalds",
+            "raw_span": "Linus Torvalds",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Linus Torvalds",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 3,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 3 agreeing source(s): github, csv, notes."
+        },
+        "conflict_detected": false
+      },
+      "links.github": {
+        "field": "links.github",
+        "is_array_field": false,
+        "final_confidence": 0.765,
+        "candidates_considered": [
+          {
+            "field": "links.github",
+            "source": "github",
+            "method": "api",
+            "value": "https://github.com/torvalds",
+            "raw_span": "https://github.com/torvalds",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "https://github.com/torvalds",
+          "source": "github",
+          "method": "api",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: github (method=api)."
+        },
+        "conflict_detected": false
+      },
+      "location.city": {
+        "field": "location.city",
+        "is_array_field": false,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "location.city",
+            "source": "ats",
+            "method": "alias_map",
+            "value": "Portland, OR",
+            "raw_span": "Portland, OR",
+            "status": "winner"
+          },
+          {
+            "field": "location.city",
+            "source": "github",
+            "method": "api",
+            "value": "Portland, OR",
+            "raw_span": "Portland, OR",
+            "status": "agreeing"
+          },
+          {
+            "field": "location.city",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "Portland",
+            "raw_span": "Portland",
+            "status": "losing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "Portland, OR",
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 1,
+          "losing_count": 1,
+          "reason": "Winner: ats (method=alias_map). 1 agreeing source(s): github. 1 losing source(s): notes (rejected values: 'Portland')."
+        },
+        "conflict_detected": true
+      },
+      "phones": {
+        "field": "phones",
+        "is_array_field": true,
+        "final_confidence": 0.77,
+        "candidates_considered": [
+          {
+            "field": "phones",
+            "source": "csv",
+            "method": "direct",
+            "value": "+15035550106",
+            "raw_span": "(503) 555-0106",
+            "status": "aggregated"
+          },
+          {
+            "field": "phones",
+            "source": "notes",
+            "method": "regex",
+            "value": "+15035550106",
+            "raw_span": "(503) 555-0106",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "+15035550106"
+          ],
+          "source_count": 2,
+          "reason": "Union + deduplicated array values from 2 source observations."
+        }
+      },
+      "skills": {
+        "field": "skills",
+        "is_array_field": true,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "skills",
+            "source": "ats",
+            "method": "alias_map",
+            "value": [
+              "C",
+              "Linux",
+              "Git",
+              "Kernel Development"
+            ],
+            "raw_span": "['C', 'Linux', 'Git', 'Kernel Development']",
+            "status": "aggregated"
+          },
+          {
+            "field": "skills",
+            "source": "github",
+            "method": "api",
+            "value": [
+              "C",
+              "C++",
+              "Openscad"
+            ],
+            "raw_span": "{'C': 10, 'C++': 1, 'OpenSCAD': 1}",
+            "status": "aggregated"
+          }
+        ],
+        "winner_details": {
+          "resolution": "union",
+          "unioned_values": [
+            "C",
+            "Linux",
+            "Git",
+            "Kernel Development",
+            "C++",
+            "Openscad"
+          ],
+          "source_count": 2,
+          "reason": "Union + deduplicated array values from 2 source observations."
+        }
+      },
+      "years_experience": {
+        "field": "years_experience",
+        "is_array_field": false,
+        "final_confidence": 0.9405,
+        "candidates_considered": [
+          {
+            "field": "years_experience",
+            "source": "ats",
+            "method": "alias_map",
+            "value": 30,
+            "raw_span": "30",
+            "status": "winner"
+          },
+          {
+            "field": "years_experience",
+            "source": "notes",
+            "method": "regex",
+            "value": 30.0,
+            "raw_span": "30+ years",
+            "status": "agreeing"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": 30.0,
+          "source": "ats",
+          "method": "alias_map",
+          "agreeing_count": 1,
+          "losing_count": 0,
+          "reason": "Winner: ats (method=alias_map). 1 agreeing source(s): notes."
+        },
+        "conflict_detected": false
+      }
+    }
+  },
+  {
+    "candidate_id": "cand_dbb734de5b12",
+    "overall_confidence": 0.2,
+    "fields": {
+      "location.city": {
+        "field": "location.city",
+        "is_array_field": false,
+        "final_confidence": 0.2,
+        "candidates_considered": [
+          {
+            "field": "location.city",
+            "source": "notes",
+            "method": "heuristic",
+            "value": "La",
+            "raw_span": "La",
+            "status": "winner"
+          }
+        ],
+        "winner_details": {
+          "resolution": "tier_priority",
+          "value": "La",
+          "source": "notes",
+          "method": "heuristic",
+          "agreeing_count": 0,
+          "losing_count": 0,
+          "reason": "Winner: notes (method=heuristic)."
+        },
+        "conflict_detected": false
+      }
+    }
+  }
+];
+        const dashboard = {
+  "batch_summary": {
+    "total_candidates_produced": 10,
+    "total_observations_ingested": 128,
+    "sources_used": [
+      "ats",
+      "csv",
+      "github",
+      "notes"
+    ],
+    "warnings_count": 1,
+    "warnings": [
+      "GitHub user 'thisuserdoesnotexist99999': no profile data (may be private/nonexistent)"
+    ]
+  },
+  "schema_coverage": {
+    "fields_populated_pct": 54.0,
+    "fields_missing_pct": 46.0,
+    "average_confidence_across_batch": 0.852,
+    "average_confidence_per_field": {
+      "full_name": 0.8669,
+      "emails": 0.8726,
+      "phones": 0.834,
+      "location": 0.0,
+      "links": 0.0,
+      "headline": 0.765,
+      "years_experience": 0.7913,
+      "skills": 0.8781,
+      "experience": 0.0,
+      "education": 0.0
+    }
+  },
+  "resolution_metrics": {
+    "total_conflicts": 7,
+    "total_agreements": 27,
+    "total_losing_values": 7
+  }
+};
+        const pipelineWarnings = [
+  "GitHub user 'thisuserdoesnotexist99999': no profile data (may be private/nonexistent)"
+];
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.innerText.toLowerCase().includes(id));
+            if (btn) btn.classList.add('active');
+            const tab = document.getElementById('tab-' + id);
+            if (tab) tab.classList.add('active');
+        }
+
+        function downloadFile(type) {
+            let data, filename;
+            if (type === 'projected') { data = projected; filename = 'projected_candidates.json'; }
+            else if (type === 'decision') { data = decisions; filename = 'decision_log.json'; }
+            else if (type === 'dashboard') { data = dashboard; filename = 'quality_dashboard.json'; }
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function fmtConf(v) { return typeof v === 'number' ? (v * 100).toFixed(0) + '%' : v; }
+        function badgeClass(v) { return v >= 0.8 ? 'badge-high' : v >= 0.5 ? 'badge-med' : 'badge-low'; }
+
+        // ---- SUMMARY ----
+        function renderSummary() {
+            const bs = dashboard.batch_summary || {};
+            const sc = dashboard.schema_coverage || {};
+            const rm = dashboard.resolution_metrics || {};
+
+            document.getElementById('w-candidates').innerText = bs.total_candidates_produced || 0;
+            document.getElementById('w-observations').innerText = bs.total_observations_ingested || 0;
+            document.getElementById('w-sources').innerText = (bs.sources_used || []).length;
+            document.getElementById('w-conflicts').innerText = rm.total_conflicts || 0;
+            document.getElementById('w-warnings').innerText = bs.warnings_count || 0;
+
+            // Confidence bar chart
+            const avgField = sc.average_confidence_per_field || {};
+            let h = '<div class="bar-chart">';
+            for (const [f, v] of Object.entries(avgField)) {
+                const pct = (v * 100).toFixed(0);
+                h += `<div class="bar-row">
+                    <span class="bar-label">${f}</span>
+                    <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+                    <span class="bar-val">${pct}%</span>
+                </div>`;
+            }
+            h += '</div>';
+            document.getElementById('confidence-chart').innerHTML = h;
+
+            // Metrics bar chart
+            const metrics = [
+                {label: 'Conflicts', val: rm.total_conflicts || 0},
+                {label: 'Agreements', val: rm.total_agreements || 0},
+                {label: 'Losing Values', val: rm.total_losing_values || 0},
+            ];
+            const maxV = Math.max(...metrics.map(m => m.val), 1);
+            let mh = '<div class="bar-chart">';
+            metrics.forEach(m => {
+                const pct = (m.val / maxV * 100).toFixed(0);
+                mh += `<div class="bar-row">
+                    <span class="bar-label">${m.label}</span>
+                    <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--primary));"></div></div>
+                    <span class="bar-val">${m.val}</span>
+                </div>`;
+            });
+            mh += '</div>';
+            document.getElementById('metrics-chart').innerHTML = mh;
+
+            // Coverage summary
+            const pop = sc.fields_populated_pct || 0;
+            const miss = sc.fields_missing_pct || 0;
+            const avgAll = sc.average_confidence_across_batch || 0;
+            document.getElementById('coverage-chart').innerHTML = `
+                <div class="bar-chart">
+                    <div class="bar-row">
+                        <span class="bar-label">Fields Populated</span>
+                        <div class="bar-track"><div class="bar-fill" style="width:${pop}%;background:var(--success);"></div></div>
+                        <span class="bar-val">${pop.toFixed(1)}%</span>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Fields Missing</span>
+                        <div class="bar-track"><div class="bar-fill" style="width:${miss}%;background:var(--error);"></div></div>
+                        <span class="bar-val">${miss.toFixed(1)}%</span>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">Avg Confidence (Batch)</span>
+                        <div class="bar-track"><div class="bar-fill" style="width:${(avgAll*100).toFixed(0)}%"></div></div>
+                        <span class="bar-val">${fmtConf(avgAll)}</span>
+                    </div>
+                </div>`;
+        }
+
+        // ---- EXPLORER LIST ----
+        function renderList() {
+            let h = '';
+            decisions.forEach((d, i) => {
+                const name = projected[i]?.full_name || projected[i]?.name || d.candidate_id;
+                h += `<div class="candidate-item" id="ci-${i}" onclick="selectCandidate(${i})">
+                    <div class="cand-name">${name}</div>
+                    <div class="cand-id">ID: ${d.candidate_id}</div>
+                </div>`;
+            });
+            document.getElementById('cand-list').innerHTML = h;
+        }
+
+        // ---- SELECT CANDIDATE ----
+        function selectCandidate(idx) {
+            document.querySelectorAll('.candidate-item').forEach(e => e.classList.remove('active'));
+            document.getElementById('ci-' + idx).classList.add('active');
+
+            const cand = projected[idx];
+            const log = decisions[idx];
+            const name = cand.full_name || cand.name || log.candidate_id;
+            const avgConf = log.overall_confidence || 0;
+
+            // Profile grid
+            let profileHtml = '<div class="profile-grid">';
+            for (const [key, val] of Object.entries(cand)) {
+                if (key === 'provenance' || key === 'field_confidences') continue;
+                profileHtml += `<div class="profile-field">
+                    <div class="pf-label">${key}</div>
+                    <div class="pf-val">${JSON.stringify(val, null, 0)}</div>
+                </div>`;
+            }
+            profileHtml += '</div>';
+
+            // Source contributions
+            const sources = {};
+            for (const fd of Object.values(log.fields || {})) {
+                for (const c of (fd.candidates_considered || [])) {
+                    const src = c.source || 'unknown';
+                    sources[src] = (sources[src] || 0) + 1;
+                }
+            }
+            let srcHtml = '<table><thead><tr><th>Source</th><th>Fields Contributed</th></tr></thead><tbody>';
+            for (const [s, n] of Object.entries(sources)) {
+                srcHtml += `<tr><td><strong>${s}</strong></td><td><span class="badge badge-high" style="font-weight:normal">${n}</span></td></tr>`;
+            }
+            srcHtml += '</tbody></table>';
+
+            // Field decisions
+            let fieldsHtml = '';
+            for (const [field, fd] of Object.entries(log.fields || {})) {
+                const w = fd.winner_details || {};
+                const conf = fd.final_confidence || 0;
+                let valStr = 'null';
+                if (w.unioned_values !== undefined) {
+                    valStr = JSON.stringify(w.unioned_values);
+                } else if (w.value !== null && w.value !== undefined) {
+                    valStr = JSON.stringify(w.value);
+                } else {
+                    const winnerC = (fd.candidates_considered || []).find(c => c.status === 'winner');
+                    if (winnerC && winnerC.value !== undefined) {
+                        valStr = JSON.stringify(winnerC.value);
+                    }
+                }
+                let contHtml = '';
+                (fd.candidates_considered || []).forEach((c, ci) => {
+                    const st = c.status;
+                    const stStyle = st === 'winner' ? 'color:var(--success);font-weight:700' :
+                                    st === 'agreeing' ? 'color:var(--primary);font-weight:600' :
+                                    st === 'losing' ? 'color:var(--error)' : 'color:var(--text-muted)';
+                    contHtml += `<div class="contender">
+                        <div class="contender-label">Source ${ci+1}</div>
+                        <div class="contender-val">
+                            <strong>${c.source || '?'}</strong> (${c.method || '?'})<br>
+                            Value: <code>${JSON.stringify(c.value)}</code>
+                            &nbsp;→&nbsp; <span style="${stStyle}">${(st || '?').toUpperCase()}</span>
+                        </div>
+                    </div>`;
+                });
+
+                fieldsHtml += `<div class="field-card">
+                    <div class="field-header">
+                        <span>${field.toUpperCase()}</span>
+                        <span class="badge ${badgeClass(conf)}">${fmtConf(conf)}</span>
+                    </div>
+                    <div class="field-body">
+                        <div style="margin-bottom:1rem;font-size:0.9rem;">
+                            <span style="color:var(--primary);font-weight:600;">Canonical Value:</span>
+                            <code style="margin-left:0.5rem;">${valStr}</code>
+                        </div>
+                        <div style="font-weight:600;font-size:0.72rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem;">Contenders:</div>
+                        ${contHtml}
+                    </div>
+                    <div class="field-explain">
+                        <div class="explain-label">Resolution Reason</div>
+                        <div>${w.reason || 'N/A'}</div>
+                    </div>
+                </div>`;
+            }
+
+            // Assemble detail pane
+            document.getElementById('cand-detail').innerHTML = `
+                <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                        <div>
+                            <h2 style="font-size:1.4rem;font-weight:700;">${name}</h2>
+                            <div style="color:var(--text-muted);font-size:0.82rem;margin-top:0.2rem;">ID: <strong>${log.candidate_id}</strong></div>
+                        </div>
+                        <span class="badge ${badgeClass(avgConf)}" style="font-size:0.9rem;padding:0.4rem 1rem;">
+                            OVERALL: ${fmtConf(avgConf)}
+                        </span>
+                    </div>
+                </div>
+
+                <details class="collapse-card" open>
+                    <summary>Canonical Profile <span>▾</span></summary>
+                    <div class="card-body">${profileHtml}</div>
+                </details>
+
+                <details class="collapse-card" open>
+                    <summary>Source Contributions <span>▾</span></summary>
+                    <div class="card-body">${srcHtml}</div>
+                </details>
+
+                <details class="collapse-card" open>
+                    <summary>Field Decision Traces <span>▾</span></summary>
+                    <div class="card-body">${fieldsHtml}</div>
+                </details>
+
+                <details class="collapse-card">
+                    <summary>Raw Projected JSON <span>▾</span></summary>
+                    <div class="card-body"><pre>${JSON.stringify(cand, null, 2)}</pre></div>
+                </details>
+            `;
+        }
+
+        // ---- VALIDATION ----
+        function renderValidation() {
+            const c = document.getElementById('validation-container');
+            if (!pipelineWarnings || pipelineWarnings.length === 0) {
+                c.innerHTML = '<div class="alert alert-info"><strong>All clear!</strong> No warnings or validation errors were recorded.</div>';
+                return;
+            }
+            let h = '';
+            pipelineWarnings.forEach(w => {
+                h += `<div class="alert alert-warning"><strong>⚠ Warning:</strong> ${w}</div>`;
+            });
+            c.innerHTML = h;
+        }
+
+        // Init
+        renderSummary();
+        renderList();
+        renderValidation();
+    </script>
+</body>
+</html>

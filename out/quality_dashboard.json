@@ -1,0 +1,38 @@
+{
+  "batch_summary": {
+    "sources_used": [
+      "ats",
+      "csv",
+      "github",
+      "notes"
+    ],
+    "total_candidates_produced": 10,
+    "total_observations_ingested": 128,
+    "warnings": [
+      "GitHub user 'thisuserdoesnotexist99999': no profile data (may be private/nonexistent)"
+    ],
+    "warnings_count": 1
+  },
+  "resolution_metrics": {
+    "total_agreements": 27,
+    "total_conflicts": 7,
+    "total_losing_values": 7
+  },
+  "schema_coverage": {
+    "average_confidence_across_batch": 0.852,
+    "average_confidence_per_field": {
+      "education": 0.0,
+      "emails": 0.8726,
+      "experience": 0.0,
+      "full_name": 0.8669,
+      "headline": 0.765,
+      "links": 0.0,
+      "location": 0.0,
+      "phones": 0.834,
+      "skills": 0.8781,
+      "years_experience": 0.7913
+    },
+    "fields_missing_pct": 46.0,
+    "fields_populated_pct": 54.0
+  }
+}

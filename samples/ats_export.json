@@ -35,5 +35,14 @@
     "skill_tags": ["C#", "Azure", "TypeScript", "React"],
     "location": "Seattle, WA",
     "years_experience": 12
+  },
+  {
+    "candidate_full_name": "Linus Torvalds",
+    "contact_email": "torvalds@linux-foundation.org",
+    "employer": "Linux Foundation",
+    "job_title": "Fellow",
+    "skill_tags": ["C", "Linux", "Git", "Kernel Development"],
+    "location": "Portland, OR",
+    "years_experience": 30
   }
 ]
